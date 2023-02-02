@@ -1,0 +1,30 @@
+baseurl = "https://www.vulnhub.cn"
+DefaultContentLanguage = "zh-cn"
+title = ""
+theme = "beautifulhugo"
+pygmentsStyle = "trac"
+pygmentsUseClasses = true
+pygmentsCodeFences = true
+pygmentsCodefencesGuessSyntax = true
+#pygmentsUseClassic = true
+#pygmentOptions = "linenos=inline"
+#disqusShortname = "XXX"
+#googleAnalytics = "XXX"
+
+[Params]
+  homeTitle = "Vulnhub中文站点" # Set a different text for the header on the home page
+# subtitle = ""
+  mainSections = ["post","posts"]
+  logo = "img/avatar-icon.webp" # Expecting square dimensions
+  favicon = "img/favicon.ico"
+  dateFormat = "January 2, 2006"
+  commit = false
+  rss = true
+  comments = true
+  readingTime = true
+  wordCount = true
+  useHLJS = true
+  socialShare = true
+  delayDisqus = true
+  showRelatedPosts = true
+  hideAuthor = true
