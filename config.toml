@@ -1,6 +1,6 @@
 baseurl = "https://www.vulnhub.cn"
 DefaultContentLanguage = "zh-cn"
-title = ""
+title = "Vulnhub中文站点"
 theme = "beautifulhugo"
 pygmentsStyle = "trac"
 pygmentsUseClasses = true
@@ -12,7 +12,7 @@ pygmentsCodefencesGuessSyntax = true
 #googleAnalytics = "XXX"
 
 [Params]
-  homeTitle = "Vulnhub中文站点" # Set a different text for the header on the home page
+# homeTitle = "Vulnhub中文站点" # Set a different text for the header on the home page
 # subtitle = ""
   mainSections = ["post","posts"]
   logo = "img/avatar-icon.webp" # Expecting square dimensions
