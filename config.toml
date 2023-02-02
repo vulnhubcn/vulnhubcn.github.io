@@ -12,8 +12,8 @@ pygmentsCodefencesGuessSyntax = true
 #googleAnalytics = "XXX"
 
 [Params]
-# homeTitle = "Vulnhub中文站点" # Set a different text for the header on the home page
-# subtitle = ""
+  homeTitle = "Vulnhub中文站点" # Set a different text for the header on the home page
+  subtitle = ""
   mainSections = ["post","posts"]
 # logo = "img/avatar-icon.webp" # Expecting square dimensions
   favicon = "img/favicon.ico"
