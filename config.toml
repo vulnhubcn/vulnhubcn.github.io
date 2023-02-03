@@ -28,3 +28,9 @@ pygmentsCodefencesGuessSyntax = true
   delayDisqus = true
   showRelatedPosts = true
   hideAuthor = true
+
+[[menu.main]]
+    name = "Walkthroughs"
+    url = "walkthrough"
+    weight = 1
+
