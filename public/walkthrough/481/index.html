@@ -1,0 +1,118 @@
+<!doctype html><html><head><title>Vulnhub 481 GEISHA-1</title><meta charset=utf-8><meta name=X-UA-Compatible content="IE=edge"><meta name=google-site-verification content><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" name=viewport><meta content="telephone=no" name=format-detection><meta name=description content><meta name=renderer content="webkit"><meta name=theme-color content="#ffffff"><script type=text/javascript>(function(e,t,n,s,o,i,a){e[n]=e[n]||function(){(e[n].q=e[n].q||[]).push(arguments)},i=t.createElement(s),i.async=1,i.src="https://www.clarity.ms/tag/"+o,a=t.getElementsByTagName(s)[0],a.parentNode.insertBefore(i,a)})(window,document,"clarity","script","abcdefghzd")</script><script src=/js/toc.js></script>
+<link type=text/css rel=stylesheet href=/vendor/css/bootstrap.min.css><link rel=stylesheet href=/scss/dark-mode.scss integrity media=screen><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Material+Icons"><script>console.log("Hello from 'layouts/partials/extended_head.html'")</script></head><body><div id=app><div class=single-column-drawer-container id=drawer v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }"><div class=drawer-content><div class=drawer-menu><a class="a-block drawer-menu-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block drawer-menu-item false" href=/posts>Archive</a>
+<a class="a-block drawer-menu-item false" href=/categories>Categories</a>
+<a class="a-block drawer-menu-item false" href=/tags>Tags</a>
+<a class="a-block drawer-menu-item false" href=/index.xml>RSS Feed</a><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><li><a href=#web%e6%b5%8b%e8%af%95 class=nav-web测试>WEB测试</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a380 class=nav-端口80>端口80</a></li><li><a href=#%e7%ab%af%e5%8f%a37080 class=nav-端口7080>端口7080</a></li><li><a href=#%e7%ab%af%e5%8f%a37125 class=nav-端口7125>端口7125</a></li><li><a href=#%e7%ab%af%e5%8f%a38088 class=nav-端口8088>端口8088</a></li><li><a href=#%e7%ab%af%e5%8f%a39198 class=nav-端口9198>端口9198</a></li></ul></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li></ul></div></div></div></div></div><transition name=fade><div id=drawer-mask v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if=isDrawerOpen v-on:click=toggleDrawer></div></transition><nav id=navBar class="navbar sticky-top navbar-light single-column-nav-container"><div id=navBackground class=nav-background></div><div class="container container-narrow nav-content"><button id=nav_dropdown_btn class=nav-dropdown-toggle type=button v-on:click=toggleDrawer>
+<i class=material-icons>menu</i></button>
+<a id=navTitle class=navbar-brand href=https://www.vulnhub.cn>Vulnhub靶机教程</a>
+<button type=button class=nav-darkmode-toggle id=darkModeToggleButton2>
+<i class=material-icons id=darkModeToggleIcon2>dark_mode</i></button></div></nav><div class=single-column-header-container id=pageHead v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }"><a href=https://www.vulnhub.cn><div class=single-column-header-title>Vulnhub靶机教程</div><div class=single-column-header-subtitle>Themed by Diary.</div></a></div><div id=content><div id=streamContainer class=stream-container><div class="post-list-container post-list-container-shadow"><div class=post><div class=post-head-wrapper-text-only><div class=post-title>Vulnhub 481 GEISHA-1<div class=post-meta><time itemprop=datePublished>2020-05-13 00:00</time></div></div></div><div class=post-body-wrapper><div class=post-body v-pre><p>考点：hydra,GTFOBins</p><p>靶机链接：<a href=https://www.vulnhub.com/entry/geisha-1,481/>https://www.vulnhub.com/entry/geisha-1,481/</a></p><h2 id=环境配置>环境配置</h2><table><thead><tr><th>名称</th><th>IP</th></tr></thead><tbody><tr><td>Kali Linux</td><td>10.0.2.24</td></tr><tr><td>GEISHA-1</td><td>10.0.2.36</td></tr></tbody></table><h2 id=初步打点>初步打点</h2><h3 id=端口扫描>端口扫描</h3><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ <span style=color:#658b00>export</span> <span style=color:#00688b>rip</span>=10.0.2.36   
+</span></span><span style=display:flex><span>$ sudo nmap -v -A -p- <span style=color:#00688b>$rip</span>
+</span></span><span style=display:flex><span>PORT     STATE SERVICE  VERSION
+</span></span><span style=display:flex><span>21/tcp   open  ftp      vsftpd 3.0.3
+</span></span><span style=display:flex><span>22/tcp   open  ssh      OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+</span></span><span style=display:flex><span>| ssh-hostkey: 
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>2048</span> 1b:f2:5d:cd:89:13:f2:49:00:9f:8c:f9:eb:a2:a2:0c (RSA)
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>256</span> 31:5a:65:2e:ab:0f:59:ab:e0:33:3a:0c:fc:49:e0:5f (ECDSA)
+</span></span><span style=display:flex><span>|_  <span style=color:#b452cd>256</span> c6:a7:35:14:96:13:f8:de:1e:e2:bc:e7:c7:66:8b:ac (ED25519)
+</span></span><span style=display:flex><span>80/tcp   open  http     Apache httpd 2.4.38 ((Debian))
+</span></span><span style=display:flex><span>|_http-title: Geisha
+</span></span><span style=display:flex><span>| http-methods: 
+</span></span><span style=display:flex><span>|_  Supported Methods: OPTIONS HEAD GET POST
+</span></span><span style=display:flex><span>|_http-server-header: Apache/2.4.38 (Debian)
+</span></span><span style=display:flex><span>7080/tcp open  ssl/http LiteSpeed httpd
+</span></span><span style=display:flex><span>|_http-title: Geisha
+</span></span><span style=display:flex><span>| http-methods: 
+</span></span><span style=display:flex><span>|_  Supported Methods: GET HEAD POST OPTIONS
+</span></span><span style=display:flex><span>| ssl-cert: Subject: <span style=color:#00688b>commonName</span>=geisha/organizationName=webadmin/countryName=US
+</span></span><span style=display:flex><span>| Issuer: <span style=color:#00688b>commonName</span>=geisha/organizationName=webadmin/countryName=US
+</span></span><span style=display:flex><span>| Public Key type: rsa
+</span></span><span style=display:flex><span>| Public Key bits: <span style=color:#b452cd>2048</span>
+</span></span><span style=display:flex><span>| Signature Algorithm: sha256WithRSAEncryption
+</span></span><span style=display:flex><span>| Not valid before: 2020-05-09T14:01:34
+</span></span><span style=display:flex><span>| Not valid after:  2022-05-09T14:01:34
+</span></span><span style=display:flex><span>| MD5:   6df2 adf3 <span style=color:#b452cd>8254</span> f954 1f65 b502 0e94 <span style=color:#b452cd>5985</span>
+</span></span><span style=display:flex><span>|_SHA-1: bd05 448c fa9f 3d8a a040 <span style=color:#b452cd>3396</span> <span style=color:#b452cd>8676</span> c64d 0f96 <span style=color:#b452cd>9993</span>
+</span></span><span style=display:flex><span>|_ssl-date: TLS randomness does not represent <span style=color:#658b00>time</span>
+</span></span><span style=display:flex><span>|_http-server-header: LiteSpeed
+</span></span><span style=display:flex><span>| tls-alpn: 
+</span></span><span style=display:flex><span>|   h2
+</span></span><span style=display:flex><span>|   spdy/3
+</span></span><span style=display:flex><span>|   spdy/2
+</span></span><span style=display:flex><span>|_  http/1.1
+</span></span><span style=display:flex><span>7125/tcp open  http     nginx 1.17.10
+</span></span><span style=display:flex><span>|_http-title: Geisha
+</span></span><span style=display:flex><span>| http-methods: 
+</span></span><span style=display:flex><span>|_  Supported Methods: GET HEAD POST
+</span></span><span style=display:flex><span>|_http-server-header: nginx/1.17.10
+</span></span><span style=display:flex><span>8088/tcp open  http     LiteSpeed httpd
+</span></span><span style=display:flex><span>|_http-title: Geisha
+</span></span><span style=display:flex><span>| http-methods: 
+</span></span><span style=display:flex><span>|_  Supported Methods: GET HEAD POST OPTIONS
+</span></span><span style=display:flex><span>|_http-server-header: LiteSpeed
+</span></span><span style=display:flex><span>9198/tcp open  http     SimpleHTTPServer 0.6 (Python 2.7.16)
+</span></span><span style=display:flex><span>|_http-title: Geisha
+</span></span><span style=display:flex><span>| http-methods: 
+</span></span><span style=display:flex><span>|_  Supported Methods: GET HEAD
+</span></span><span style=display:flex><span>|_http-server-header: SimpleHTTP/0.6 Python/2.7.16
+</span></span></code></pre></td></tr></table></div></div><p>端口21无有用信息</p><h3 id=web测试>WEB测试</h3><h4 id=端口80>端口80</h4><p>无有用信息</p><h4 id=端口7080>端口7080</h4><p>无有用信息</p><h4 id=端口7125>端口7125</h4><p><code>dirb</code>一顿输出</p><p><img src=https://www.vulnhub.cn/walkthrough/481/1.webp alt=1></p><p>下载 http://10.0.2.36:7125/passwd发现存在用户<code>geisha</code></p><h4 id=端口8088>端口8088</h4><p>无有用信息</p><h4 id=端口9198>端口9198</h4><p>无有用信息</p><h2 id=获得权限>获得权限</h2><p>根据上面得到的用户名，爆破下ssh</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ hydra -l geisha -P /usr/share/wordlists/rockyou.txt -f 10.0.2.36 ssh
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://www.vulnhub.cn/walkthrough/481/2.webp alt=2></p><p>爆破成功</p><h2 id=提权>提权</h2><p><img src=https://www.vulnhub.cn/walkthrough/481/3.webp alt=3></p><p><a href=https://gtfobins.github.io/gtfobins/base32/>GTFOBins</a>走起</p><p><img src=https://www.vulnhub.cn/walkthrough/481/4.webp alt=4></p><p>不能执行命令，但是可以root权限读取文件</p><p>那就读取一下root ssh登录认证密钥吧</p><p><img src=https://www.vulnhub.cn/walkthrough/481/5.webp alt=5></p><p>保存为id_rsa，修改权限，登录root用户</p><p><img src=https://www.vulnhub.cn/walkthrough/481/6.webp alt=6></p><hr width=100% id=EOF><p style=color:#777>最后修改于 2020-05-13</p></div></div><nav class=post-pagination><a class=newer-posts href=/walkthrough/484/>下回<br>Vulnhub 484 SEPPUKU-1</a>
+<a class=older-posts href=/walkthrough/482/>上回<br>Vulnhub 482 KATANA 1</a></nav><div class=post-comment-wrapper></div></div></div></div></div><div id=sideContainer class=side-container><a class="a-block nav-head false" href=https://www.vulnhub.cn><div class=nav-title>Vulnhub靶机教程</div><div class=nav-subtitle>Themed by Diary.</div></a><div class=nav-link-list><a class="a-block nav-link-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block nav-link-item false" href=/posts>Archive</a>
+<a class="a-block nav-link-item false" href=/categories>Categories</a>
+<a class="a-block nav-link-item false" href=/tags>Tags</a>
+<a class="a-block nav-link-item false" href=/index.xml>RSS Feed</a></div><div class=nav-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><div id=extraContainer class=extra-container><div class=toc-wrapper><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><li><a href=#web%e6%b5%8b%e8%af%95 class=nav-web测试>WEB测试</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a380 class=nav-端口80>端口80</a></li><li><a href=#%e7%ab%af%e5%8f%a37080 class=nav-端口7080>端口7080</a></li><li><a href=#%e7%ab%af%e5%8f%a37125 class=nav-端口7125>端口7125</a></li><li><a href=#%e7%ab%af%e5%8f%a38088 class=nav-端口8088>端口8088</a></li><li><a href=#%e7%ab%af%e5%8f%a39198 class=nav-端口9198>端口9198</a></li></ul></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li></ul></div></div></div><div class=pagination><a id=globalBackToTop class="pagination-action animated-visibility" href=#top :class="{ invisible: scrollY == 0 }"><i class="material-icons pagination-action-icon">keyboard_arrow_up</i></a>
+<a type=button class=pagination-action id=darkModeToggleButton><span class="material-icons pagination-action-icon" id=darkModeToggleIcon>dark_mode</span></a></div></div><div id=single-column-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><script src=/js/journal.js></script></body></html>

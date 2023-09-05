@@ -1,0 +1,112 @@
+<!doctype html><html><head><title>Vulnhub 25 KIOPTRIX-LEVEL 1.3</title><meta charset=utf-8><meta name=X-UA-Compatible content="IE=edge"><meta name=google-site-verification content><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" name=viewport><meta content="telephone=no" name=format-detection><meta name=description content><meta name=renderer content="webkit"><meta name=theme-color content="#ffffff"><script type=text/javascript>(function(e,t,n,s,o,i,a){e[n]=e[n]||function(){(e[n].q=e[n].q||[]).push(arguments)},i=t.createElement(s),i.async=1,i.src="https://www.clarity.ms/tag/"+o,a=t.getElementsByTagName(s)[0],a.parentNode.insertBefore(i,a)})(window,document,"clarity","script","abcdefghzd")</script><script src=/js/toc.js></script>
+<link type=text/css rel=stylesheet href=/vendor/css/bootstrap.min.css><link rel=stylesheet href=/scss/dark-mode.scss integrity media=screen><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Material+Icons"><script>console.log("Hello from 'layouts/partials/extended_head.html'")</script></head><body><div id=app><div class=single-column-drawer-container id=drawer v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }"><div class=drawer-content><div class=drawer-menu><a class="a-block drawer-menu-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block drawer-menu-item false" href=/posts>Archive</a>
+<a class="a-block drawer-menu-item false" href=/categories>Categories</a>
+<a class="a-block drawer-menu-item false" href=/tags>Tags</a>
+<a class="a-block drawer-menu-item false" href=/index.xml>RSS Feed</a><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><li><a href=#web%e6%b5%8b%e8%af%95 class=nav-web测试>WEB测试</a></li><ul><li><a href=#gobuster class=nav-gobuster>gobuster</a></li><li><a href=#%e4%b8%87%e8%83%bd%e5%af%86%e7%a0%81 class=nav-万能密码>万能密码</a></li></ul></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><ul><li><a href=#ssh class=nav-ssh>ssh</a></li></ul><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li><ul><li><a href=#sudoers class=nav-sudoers>sudoers</a></li></ul></div></div></div></div></div><transition name=fade><div id=drawer-mask v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if=isDrawerOpen v-on:click=toggleDrawer></div></transition><nav id=navBar class="navbar sticky-top navbar-light single-column-nav-container"><div id=navBackground class=nav-background></div><div class="container container-narrow nav-content"><button id=nav_dropdown_btn class=nav-dropdown-toggle type=button v-on:click=toggleDrawer>
+<i class=material-icons>menu</i></button>
+<a id=navTitle class=navbar-brand href=https://www.vulnhub.cn>Vulnhub靶机教程</a>
+<button type=button class=nav-darkmode-toggle id=darkModeToggleButton2>
+<i class=material-icons id=darkModeToggleIcon2>dark_mode</i></button></div></nav><div class=single-column-header-container id=pageHead v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }"><a href=https://www.vulnhub.cn><div class=single-column-header-title>Vulnhub靶机教程</div><div class=single-column-header-subtitle>Themed by Diary.</div></a></div><div id=content><div id=streamContainer class=stream-container><div class="post-list-container post-list-container-shadow"><div class=post><div class=post-head-wrapper-text-only><div class=post-title>Vulnhub 25 KIOPTRIX-LEVEL 1.3<div class=post-meta><time itemprop=datePublished>2012-02-08 00:00</time></div></div></div><div class=post-body-wrapper><div class=post-body v-pre><p>考点： sqlinject,os.system(),sudoers</p><p>靶机链接：<a href=https://www.vulnhub.com/entry/kioptrix-level-13-4,25/>https://www.vulnhub.com/entry/kioptrix-level-13-4,25/</a></p><h2 id=环境配置>环境配置</h2><table><thead><tr><th>名称</th><th>IP</th></tr></thead><tbody><tr><td>Kali Linux</td><td>192.168.88.135</td></tr><tr><td>KIOPTRIX: LEVEL 1.3</td><td>192.168.88.139</td></tr></tbody></table><p>vmware新建Linux虚拟机，删除硬盘，再添加硬盘<code>Kioptrix4_vmware.vmdk</code>，配置nat网络，启动该虚拟机。</p><p><img src=https://www.vulnhub.cn/walkthrough/25/1.webp alt></p><h2 id=初步打点>初步打点</h2><h3 id=端口扫描>端口扫描</h3><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ <span style=color:#658b00>export</span> <span style=color:#00688b>rip</span>=192.168.142.129
+</span></span><span style=display:flex><span>$ sudo nmap -v -A <span style=color:#00688b>$rip</span>
+</span></span><span style=display:flex><span>PORT    STATE SERVICE     VERSION
+</span></span><span style=display:flex><span>22/tcp  open  ssh         OpenSSH 4.7p1 Debian 8ubuntu1.2 (protocol 2.0)
+</span></span><span style=display:flex><span>| ssh-hostkey: 
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>1024</span> 9bad4ff21ec5f23914b9d3a00be84171 (DSA)
+</span></span><span style=display:flex><span>|_  <span style=color:#b452cd>2048</span> 8540c6d541260534adf86ef2a76b4f0e (RSA)
+</span></span><span style=display:flex><span>80/tcp  open  http        Apache httpd 2.2.8 ((Ubuntu) PHP/5.2.4-2ubuntu5.6 with Suhosin-Patch)
+</span></span><span style=display:flex><span>|_http-server-header: Apache/2.2.8 (Ubuntu) PHP/5.2.4-2ubuntu5.6 with Suhosin-Patch
+</span></span><span style=display:flex><span>|_http-title: Site doesn<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>t have a title (text/html).
+</span></span><span style=display:flex><span>| http-methods: 
+</span></span><span style=display:flex><span>|_  Supported Methods: GET HEAD POST OPTIONS
+</span></span><span style=display:flex><span>139/tcp open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+</span></span><span style=display:flex><span>445/tcp open  netbios-ssn Samba smbd 3.0.28a (workgroup: WORKGROUP)
+</span></span><span style=display:flex><span>MAC Address: 00:0C:29:A4:F6:74 (VMware)
+</span></span><span style=display:flex><span>Device type: general purpose
+</span></span><span style=display:flex><span>Running: Linux 2.6.X
+</span></span><span style=display:flex><span>OS CPE: cpe:/o:linux:linux_kernel:2.6
+</span></span><span style=display:flex><span>OS details: Linux 2.6.9 - 2.6.33
+</span></span><span style=display:flex><span>Uptime guess: 497.100 days (since Tue Sep <span style=color:#b452cd>28</span> 09:23:43 2021)
+</span></span><span style=display:flex><span>Network Distance: <span style=color:#b452cd>1</span> hop
+</span></span><span style=display:flex><span>TCP Sequence Prediction: <span style=color:#00688b>Difficulty</span>=<span style=color:#b452cd>202</span> (Good luck!)
+</span></span><span style=display:flex><span>IP ID Sequence Generation: All zeros
+</span></span><span style=display:flex><span>Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Host script results:
+</span></span><span style=display:flex><span>|_smb2-time: Protocol negotiation failed (SMB2)
+</span></span><span style=display:flex><span>|_clock-skew: mean: 10h30m01s, deviation: 3h32m08s, median: 8h00m00s
+</span></span><span style=display:flex><span>| nbstat: NetBIOS name: KIOPTRIX4, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: <span style=color:#b452cd>000000000000</span> (Xerox)
+</span></span><span style=display:flex><span>| Names:
+</span></span><span style=display:flex><span>|   KIOPTRIX4&lt;00&gt;        Flags: &lt;unique&gt;&lt;active&gt;
+</span></span><span style=display:flex><span>|   KIOPTRIX4&lt;03&gt;        Flags: &lt;unique&gt;&lt;active&gt;
+</span></span><span style=display:flex><span>|   KIOPTRIX4&lt;20&gt;        Flags: &lt;unique&gt;&lt;active&gt;
+</span></span><span style=display:flex><span>|   WORKGROUP&lt;1e&gt;        Flags: &lt;group&gt;&lt;active&gt;
+</span></span><span style=display:flex><span>|_  WORKGROUP&lt;00&gt;        Flags: &lt;group&gt;&lt;active&gt;
+</span></span><span style=display:flex><span>| smb-security-mode: 
+</span></span><span style=display:flex><span>|   account_used: guest
+</span></span><span style=display:flex><span>|   authentication_level: user
+</span></span><span style=display:flex><span>|   challenge_response: supported
+</span></span><span style=display:flex><span>|_  message_signing: disabled (dangerous, but default)
+</span></span><span style=display:flex><span>| smb-os-discovery: 
+</span></span><span style=display:flex><span>|   OS: Unix (Samba 3.0.28a)
+</span></span><span style=display:flex><span>|   Computer name: Kioptrix4
+</span></span><span style=display:flex><span>|   NetBIOS computer name: 
+</span></span><span style=display:flex><span>|   Domain name: localdomain
+</span></span><span style=display:flex><span>|   FQDN: Kioptrix4.localdomain
+</span></span></code></pre></td></tr></table></div></div><h3 id=web测试>WEB测试</h3><p><img src=https://www.vulnhub.cn/walkthrough/25/2.webp alt></p><p><img src=https://www.vulnhub.cn/walkthrough/25/3.webp alt></p><p><img src=https://www.vulnhub.cn/walkthrough/25/4.webp alt></p><p>Password字段存在sql 注入</p><h4 id=gobuster>gobuster</h4><p><img src=https://www.vulnhub.cn/walkthrough/25/5.webp alt></p><p>猜测存在用户<code>john</code>和<code>robert</code> 。</p><h4 id=万能密码>万能密码</h4><p>使用万能密码<code>1' or 1='1--</code> 登录成功</p><p><img src=https://www.vulnhub.cn/walkthrough/25/6.webp alt></p><p><img src=https://www.vulnhub.cn/walkthrough/25/7.webp alt></p><p>admin用户登录成功但是报错。</p><p>使用<code>gobuster</code>的结果登录</p><p><img src=https://www.vulnhub.cn/walkthrough/25/8.webp alt></p><p>Username : john
+Password : MyNameIsJohn</p><p><img src=https://www.vulnhub.cn/walkthrough/25/9.webp alt></p><p>Username : robert
+Password : ADGAdsafdfwt4gadfga==</p><h2 id=获得权限>获得权限</h2><h3 id=ssh>ssh</h3><p>登录成功</p><p><img src=https://www.vulnhub.cn/walkthrough/25/10.webp alt></p><p><img src=https://www.vulnhub.cn/walkthrough/25/11.webp alt></p><p><img src=https://www.vulnhub.cn/walkthrough/25/12.webp alt></p><p><img src=https://www.vulnhub.cn/walkthrough/25/13.webp alt></p><p><img src=https://www.vulnhub.cn/walkthrough/25/14.webp alt></p><h2 id=提权>提权</h2><p>尝试执行<code>sys_exec()</code></p><p><img src=https://www.vulnhub.cn/walkthrough/25/15.webp alt></p><p><img src=https://www.vulnhub.cn/walkthrough/25/16.webp alt></p><p>命令执行成功，且为root权限。</p><h3 id=sudoers>sudoers</h3><p>修改<code>sudoers</code>文件</p><p><img src=https://www.vulnhub.cn/walkthrough/25/17.webp alt></p><p><img src=https://www.vulnhub.cn/walkthrough/25/18.webp alt></p><p><img src=https://www.vulnhub.cn/walkthrough/25/19.webp alt></p><p>获得root</p><p><img src=https://www.vulnhub.cn/walkthrough/25/20.webp alt></p><hr width=100% id=EOF><p style=color:#777>最后修改于 2012-02-08</p></div></div><nav class=post-pagination><a class=newer-posts href=/walkthrough/48/>下回<br>Vulnhub 48 HACKLAB-VULNIX</a>
+<a class=older-posts href=/walkthrough/34/>上回<br>Vulnhub 34 PWNOS-2.0</a></nav><div class=post-comment-wrapper></div></div></div></div></div><div id=sideContainer class=side-container><a class="a-block nav-head false" href=https://www.vulnhub.cn><div class=nav-title>Vulnhub靶机教程</div><div class=nav-subtitle>Themed by Diary.</div></a><div class=nav-link-list><a class="a-block nav-link-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block nav-link-item false" href=/posts>Archive</a>
+<a class="a-block nav-link-item false" href=/categories>Categories</a>
+<a class="a-block nav-link-item false" href=/tags>Tags</a>
+<a class="a-block nav-link-item false" href=/index.xml>RSS Feed</a></div><div class=nav-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><div id=extraContainer class=extra-container><div class=toc-wrapper><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><li><a href=#web%e6%b5%8b%e8%af%95 class=nav-web测试>WEB测试</a></li><ul><li><a href=#gobuster class=nav-gobuster>gobuster</a></li><li><a href=#%e4%b8%87%e8%83%bd%e5%af%86%e7%a0%81 class=nav-万能密码>万能密码</a></li></ul></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><ul><li><a href=#ssh class=nav-ssh>ssh</a></li></ul><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li><ul><li><a href=#sudoers class=nav-sudoers>sudoers</a></li></ul></div></div></div><div class=pagination><a id=globalBackToTop class="pagination-action animated-visibility" href=#top :class="{ invisible: scrollY == 0 }"><i class="material-icons pagination-action-icon">keyboard_arrow_up</i></a>
+<a type=button class=pagination-action id=darkModeToggleButton><span class="material-icons pagination-action-icon" id=darkModeToggleIcon>dark_mode</span></a></div></div><div id=single-column-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><script src=/js/journal.js></script></body></html>

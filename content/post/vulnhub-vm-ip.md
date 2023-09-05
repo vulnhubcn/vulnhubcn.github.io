@@ -1,6 +1,6 @@
 ---
 title: Vulnhub靶机虚拟机无法获得IP
-date: 1111-02-02
+date: 2023-08-08
 tags: ["vulnhub"]
 ---
 

